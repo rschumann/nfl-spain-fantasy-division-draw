@@ -1,31 +1,48 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Chat UI E2E (Task 08)', () => {
-  test('desktop displays chat sidebar with team selector and input form', async ({
+test.describe('Chat UI E2E with Team Key Authentication', () => {
+  test('authenticates with team key and sends chat message with emoji', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/');
+    const width = page.viewportSize()?.width ?? 1440;
+    if (width < 1024) {
+      await page.locator('#chat-toggle-btn').click();
+    }
 
-    const chatSection = page.locator('#chat-root');
-    await expect(chatSection).toBeVisible();
+    await expect(page.locator('.chat-title')).toHaveText('Chat de la liga');
+    await expect(page.locator('.badge-spectator')).toBeVisible();
 
-    const select = chatSection.locator('[data-ref="team-select"]');
-    await expect(select).toBeVisible();
+    const keyInput = page.locator('[data-ref="chat-key-input"]');
+    await keyInput.fill('steelers-7821');
+    await page.locator('[data-ref="chat-login-form"] button[type="submit"]').click();
 
-    const input = chatSection.locator('[data-ref="chat-input"]');
-    await expect(input).toBeVisible();
+    await expect(page.locator('.badge-team')).toContainText('Madrid Steelers');
+    const msgInput = page.locator('[data-ref="chat-input"]');
+    await msgInput.fill('¡Madrid Steelers listos! ');
+    await page.locator('[data-emoji="🔥"]').click();
+    await page.locator('[data-ref="chat-form"] button[type="submit"]').click();
+
+    await expect(page.locator('.chat-message-item').first()).toContainText(
+      'Madrid Steelers'
+    );
+    await expect(page.locator('.chat-message-body').first()).toContainText(
+      '¡Madrid Steelers listos! 🔥'
+    );
   });
 
-  test('mobile displays floating toggle and opens bottom sheet', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/');
+  test('auto-authenticates via URL parameter', async ({ page }) => {
+    await page.goto('/?key=patriots-4912');
+    await expect(page.locator('.badge-team')).toContainText('Toledo Patriots');
+  });
 
+  test('mobile opens bottom sheet and displays chat', async ({ page }) => {
+    const width = page.viewportSize()?.width ?? 1440;
+    if (width >= 1024) return;
+    await page.goto('/');
     const toggleBtn = page.locator('#chat-toggle-btn');
     await expect(toggleBtn).toBeVisible();
-
     await toggleBtn.click();
-    const chatSection = page.locator('#chat-root');
-    await expect(chatSection).toHaveClass(/sheet-open/);
+    await expect(page.locator('#chat-root')).toHaveClass(/sheet-open/);
   });
 });

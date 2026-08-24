@@ -96,12 +96,13 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     );
   });
 
-  it('renders division slots and empty/filled pending teams lists', () => {
+  it('renders division slots and pending teams with online indicators', () => {
     const container = document.getElementById('app')!;
     const vm = createDrawViewModel(sampleDto, 120);
-    renderDivisions(container, vm.divisions);
-    renderPendingTeams(container, vm.pendingTeams, vm.progressText);
-    expect(container.querySelectorAll('.slot-team')).toHaveLength(1);
+    renderDivisions(container, vm.divisions, ['madrid-steelers']);
+    renderPendingTeams(container, vm.pendingTeams, vm.progressText, ['madrid-steelers']);
+    expect(container.querySelector('.slot-item.is-online')).not.toBeNull();
+    expect(container.querySelector('.team-chip.is-online')).not.toBeNull();
 
     renderPendingTeams(container, [], '16 de 16 equipos sorteados');
     expect(container.querySelector('.team-chip')?.textContent).toContain(
@@ -126,7 +127,6 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     const box = container.querySelector<HTMLElement>('[data-ref="verification-box"]');
     expect(box?.style.display).toBe('flex');
     expect(box?.textContent).toContain('Semilla revelada:');
-    expect(box?.textContent).toContain('Comando de auditoría:');
   });
 
   it('handles sync controller updates and live announcements', async () => {

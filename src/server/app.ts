@@ -7,11 +7,15 @@ import type { AppConfig } from '../config/load-config.js';
 import type { Clock, DrawRepository } from '../application/ports.js';
 import { drawRoute } from './routes/draw-route.js';
 import { healthRoute } from './routes/health-route.js';
+import { authRoutes } from './routes/auth-route.js';
+import { createChatRoutes } from './routes/chat-route.js';
+import { ChatStore } from './chat-store.js';
 
 export interface ServerDependencies {
   readonly config: AppConfig;
   readonly repository: DrawRepository;
   readonly clock: Clock;
+  readonly chatStore?: ChatStore;
 }
 
 async function registerSecurityHeaders(app: FastifyInstance): Promise<void> {
@@ -67,10 +71,13 @@ export async function createServerApp(
   deps: ServerDependencies
 ): Promise<FastifyInstance> {
   const app = fastify({ logger: false });
+  const store = deps.chatStore ?? new ChatStore();
   await registerSecurityHeaders(app);
   registerStaticAssets(app);
   await app.register(drawRoute, deps);
   await app.register(healthRoute, deps);
+  await app.register(authRoutes);
+  await app.register(createChatRoutes(store));
   setupErrorHandlers(app);
   return app;
 }

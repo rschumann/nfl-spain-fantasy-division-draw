@@ -1,86 +1,161 @@
-import { getFirebaseClient, type FirebaseClientConfig } from './firebase-client.js';
-import { ensureAnonymousAuth } from './chat-auth.js';
-import { getSelectedTeamId, setSelectedTeamId } from './chat-identity.js';
-import { subscribeToMessages, sendMessage, type ChatMessage } from './chat-repository.js';
-import { buildChatLayout, renderMessages } from './render-chat.js';
+import { buildChatLayout, renderSessionArea, renderMessages } from './render-chat.js';
+import {
+  getStoredSession,
+  getUrlKey,
+  saveStoredSession,
+  clearStoredSession,
+  type TeamSession
+} from './chat-session.js';
+import { fetchMessages, loginWithTeamKey, sendChatMessage } from './chat-api.js';
 import { ChatSheetController } from './chat-sheet.js';
-import type { Unsubscribe, Firestore } from 'firebase/firestore';
 
 export class ChatController {
-  private unsubscribe: Unsubscribe | null = null;
-  private currentUid: string | null = null;
-  private currentTeamId: string;
-  readonly sheet: ChatSheetController;
+  private session: TeamSession | null = null;
+  private pollIntervalId: number | null = null;
+  private messagesListEl: HTMLElement | null = null;
+  private badgeEl: HTMLElement | null = null;
+  private formAreaEl: HTMLElement | null = null;
 
   constructor(
     private readonly container: HTMLElement,
-    toggleBtn: HTMLElement | null,
-    private readonly config: FirebaseClientConfig,
-    private readonly roomId = 'nfl-spain-26-27'
-  ) {
-    this.currentTeamId = getSelectedTeamId();
-    this.sheet = new ChatSheetController(container, toggleBtn);
+    private readonly toggleBtn: HTMLElement | null
+  ) {}
+
+  async start(): Promise<void> {
+    buildChatLayout(this.container);
+    new ChatSheetController(this.container, this.toggleBtn);
+    this.messagesListEl = this.container.querySelector('[data-ref="chat-messages"]');
+    this.badgeEl = this.container.querySelector('[data-ref="chat-session-badge"]');
+    this.formAreaEl = this.container.querySelector('[data-ref="chat-form-area"]');
+
+    await this.resolveInitialSession();
+    this.renderSession(0);
+    await this.syncMessages();
+    this.pollIntervalId = window.setInterval(() => this.syncMessages(), 2000);
   }
 
-  private setupIdentityListener(): void {
-    const select = this.container.querySelector<HTMLSelectElement>(
-      '[data-ref="team-select"]'
+  private async resolveInitialSession(): Promise<void> {
+    const urlKey = getUrlKey();
+    if (urlKey) {
+      const res = await loginWithTeamKey(urlKey);
+      if (res.valid && res.teamId && res.teamName) {
+        this.session = { key: urlKey, teamId: res.teamId, teamName: res.teamName };
+        saveStoredSession(this.session);
+        return;
+      }
+    }
+    this.session = getStoredSession();
+  }
+
+  private renderSession(onlineCount = 0): void {
+    if (!this.formAreaEl || !this.badgeEl) return;
+    renderSessionArea(this.formAreaEl, this.badgeEl, this.session, onlineCount);
+    this.attachFormListeners();
+    this.attachEmojiListeners();
+  }
+
+  private attachEmojiListeners(): void {
+    const btns = this.container.querySelectorAll<HTMLButtonElement>('.emoji-btn');
+    btns.forEach((btn) => {
+      btn.onclick = () => {
+        const emoji = btn.dataset.emoji;
+        const input = this.container.querySelector<HTMLInputElement>(
+          '[data-ref="chat-input"]'
+        );
+        if (input && emoji) {
+          input.value += emoji;
+          input.focus();
+        }
+      };
+    });
+  }
+
+  private attachFormListeners(): void {
+    const logoutBtn = this.container.querySelector<HTMLButtonElement>(
+      '[data-ref="btn-logout"]'
     );
-    if (select) {
-      select.onchange = () => {
-        this.currentTeamId = select.value;
-        setSelectedTeamId(select.value);
+    if (logoutBtn) {
+      logoutBtn.onclick = () => {
+        clearStoredSession();
+        this.session = null;
+        this.renderSession();
       };
     }
+    const loginForm = this.container.querySelector<HTMLFormElement>(
+      '[data-ref="chat-login-form"]'
+    );
+    if (loginForm) this.setupLoginForm(loginForm);
+    const msgForm = this.container.querySelector<HTMLFormElement>(
+      '[data-ref="chat-form"]'
+    );
+    if (msgForm) this.setupMessageForm(msgForm);
   }
 
-  private setupFormListener(db: Firestore): void {
-    const form = this.container.querySelector<HTMLFormElement>('[data-ref="chat-form"]');
-    const input = this.container.querySelector<HTMLInputElement>(
-      '[data-ref="chat-input"]'
-    );
-    if (!form || !input) return;
-
+  private setupLoginForm(form: HTMLFormElement): void {
     form.onsubmit = async (e) => {
       e.preventDefault();
-      const text = input.value.trim();
-      if (!text || !this.currentUid) return;
-      input.value = '';
-      try {
-        await sendMessage(db, this.roomId, this.currentUid, this.currentTeamId, text);
-      } catch (err) {
-        console.warn('Chat send message failed:', err);
+      const input = form.querySelector<HTMLInputElement>('[data-ref="chat-key-input"]');
+      const key = (input?.value ?? '').trim();
+      if (!key) return;
+      const res = await loginWithTeamKey(key);
+      if (res.valid && res.teamId && res.teamName) {
+        this.session = { key, teamId: res.teamId, teamName: res.teamName };
+        saveStoredSession(this.session);
+        this.renderSession();
+        await this.syncMessages();
+      } else {
+        alert(res.error ?? 'Clave de equipo no válida');
       }
     };
   }
 
-  async start(): Promise<void> {
-    buildChatLayout(this.container, this.currentTeamId);
-    this.setupIdentityListener();
-    try {
-      const { auth, db } = getFirebaseClient(this.config);
-      const user = await ensureAnonymousAuth(auth);
-      this.currentUid = user.uid;
-      this.setupFormListener(db);
-      this.unsubscribe = subscribeToMessages(
-        db,
-        this.roomId,
-        (msgs: readonly ChatMessage[]) => renderMessages(this.container, msgs),
-        (err) => console.warn('Chat subscription warning:', err)
-      );
-    } catch (err) {
-      console.warn('Chat initialization degraded gracefully:', err);
-      const list = this.container.querySelector('[data-ref="chat-messages"]');
-      if (list)
-        list.innerHTML =
-          '<li class="chat-message-item">Chat temporalmente no disponible.</li>';
+  private setupMessageForm(form: HTMLFormElement): void {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const input = form.querySelector<HTMLInputElement>('[data-ref="chat-input"]');
+      const text = (input?.value ?? '').trim();
+      if (!text || !this.session) return;
+      input!.value = '';
+      await sendChatMessage(this.session.key, text);
+      await this.syncMessages();
+    };
+  }
+
+  private updateOnlineStatus(onlineTeamIds: readonly string[]): void {
+    document.querySelectorAll<HTMLElement>('.team-chip').forEach((chip) => {
+      const teamId = chip.getAttribute('data-team-id');
+      const isOnline = teamId ? onlineTeamIds.includes(teamId) : false;
+      chip.classList.toggle('is-online', isOnline);
+      let dot = chip.querySelector('.online-dot');
+      if (isOnline && !dot) {
+        dot = document.createElement('span');
+        dot.className = 'online-dot';
+        chip.prepend(dot);
+      } else if (!isOnline && dot) {
+        dot.remove();
+      }
+    });
+  }
+
+  async syncMessages(): Promise<void> {
+    if (!this.messagesListEl) return;
+    const { messages, onlineTeamIds } = await fetchMessages(this.session?.key);
+    renderMessages(this.messagesListEl, messages, onlineTeamIds);
+    this.updateOnlineStatus(onlineTeamIds);
+    if (!this.session && this.badgeEl) {
+      const spectatorEl = this.badgeEl.querySelector('.badge-spectator');
+      if (spectatorEl) {
+        const countText =
+          onlineTeamIds.length > 0 ? ` (${onlineTeamIds.length} online)` : '';
+        spectatorEl.textContent = `👁️ Espectador${countText}`;
+      }
     }
   }
 
   stop(): void {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-      this.unsubscribe = null;
+    if (this.pollIntervalId !== null) {
+      window.clearInterval(this.pollIntervalId);
+      this.pollIntervalId = null;
     }
   }
 }

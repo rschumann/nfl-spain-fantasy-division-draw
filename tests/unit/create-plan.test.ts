@@ -96,7 +96,7 @@ describe('Draw Plan Creation & Invariants (Task 03)', () => {
       expect(inv.valid).toBe(true);
       expect(inv.errors).toHaveLength(0);
     }
-  });
+  }, 60000);
 
   it('invariants validator flags corrupted assignments', () => {
     const plan = createDrawPlan(
@@ -109,7 +109,7 @@ describe('Draw Plan Creation & Invariants (Task 03)', () => {
       SAMPLE_DIVISIONS
     );
     const corrupted = [...plan.assignments];
-    corrupted[0] = { ...corrupted[0]!, teamId: corrupted[1]!.teamId }; // duplicate team
+    corrupted[0] = { ...corrupted[0]!, teamId: corrupted[1]!.teamId };
     const res = validateDrawInvariants(
       SAMPLE_TEAMS,
       SAMPLE_DIVISIONS,

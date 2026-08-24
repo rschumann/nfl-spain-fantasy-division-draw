@@ -16,13 +16,7 @@ export function initializeApp(): {
   let chatController: ChatController | null = null;
 
   if (chatRoot) {
-    chatController = new ChatController(chatRoot, chatToggle, {
-      apiKey: 'local-mock-api-key',
-      authDomain: 'nfl-spain-draw-local.firebaseapp.com',
-      projectId: 'nfl-spain-draw-local',
-      appId: '1:123456789:web:abcdef',
-      useEmulators: true
-    });
+    chatController = new ChatController(chatRoot, chatToggle);
     chatController.start();
   }
 
