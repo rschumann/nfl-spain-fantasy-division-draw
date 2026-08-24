@@ -1,33 +1,42 @@
 # NFL Spain Fantasy — Sorteo de Divisiones
 
-Aplicación pública y minimalista para sortear los 16 equipos de la liga NFL Spain Fantasy entre cuatro divisiones equilibradas. El sorteo empieza en una fecha programada y revela una asignación nueva cada dos minutos.
+Aplicación web minimalista y determinista para sortear los 16 equipos de la liga NFL Spain Fantasy entre cuatro divisiones equilibradas (NORTH, EAST, WEST, SOUTH).
 
-## Estado
+El sorteo se bloquea atómicamente al arrancar mediante un compromiso criptográfico SHA-256 inalterable y revela una nueva asignación cada 120 segundos basada en la hora authoritative del servidor.
 
-**Fase actual: definición y especificación.** Todavía no hay implementación.
+## Arquitectura y Principios
 
-## Documentación
+- **Dominio Puro:** Algoritmo determinista Fisher–Yates con stream HMAC-SHA-256 e invariantes de balance (4 equipos por división, sin duplicados ni posiciones vacías).
+- **Servidor Fastify:** API de solo lectura (`/api/draw`, `/api/health`) con cabeceras `no-store` y estricto Content Security Policy.
+- **Frontend Vanilla TS/HTML/CSS:** Cero dependencias de framework en UI. Renderizado seguro con `textContent`.
+- **Chat de Liga Gestionado:** Firebase Auth anónimo y Firestore con reglas security deny-by-default.
+- **Auditoría e Integridad:** Verificación matemática reproducible tanto en el navegador como offline mediante terminal (`shasum -a 256`).
 
-- [Definición del proyecto](docs/PROJECT_DEFINITION.md)
-- [Especificación del producto](docs/specs/PRODUCT_SPEC.md)
-- [Reglas del sorteo](docs/specs/DRAW_RULES.md)
-- [Configuración por entorno](docs/specs/CONFIGURATION.md)
-- [Especificación de interfaz](docs/specs/UI_SPEC.md)
-- [Especificación del chat](docs/specs/CHAT_SPEC.md)
-- [Criterios de aceptación](docs/specs/ACCEPTANCE_CRITERIA.md)
-- [Sprint 001 — Implementación](development/sprints/SPRINT-001/SPRINT.md)
+## Scripts Disponibles
 
-## Configuración confirmada
+```bash
+# Desarrollo
+npm run dev           # Servidor de desarrollo Vite
+npm run dev:server    # Servidor Fastify con autoreload
 
-- Liga: `NFL Spain`.
-- Temporada: `26-27`.
-- Zona horaria: `Europe/Madrid`.
-- Pruebas locales: `DRAW_START_AT=now`, resuelto al arrancar el servidor local.
-- Chat de liga: activado en local contra Firebase Emulator Suite.
-- Producción: fecha y hora todavía pendientes.
+# Construcción
+npm run build         # Compila cliente (dist/) y verifica servidor
 
-La plantilla versionada está en [`.env.example`](.env.example). La configuración local activa vive en `.env.local` y no se versiona.
+# Puerta de calidad completa
+npm run verify        # format:check + lint + limits + typecheck + deps:check + path check + coverage + build
 
-## Próximo sprint
+# Pruebas
+npm run test:coverage # Vitest con cobertura V8 (>90% lines/funcs, >85% branch)
+npm run test:rules    # Suite de reglas de seguridad Firestore en emulador local
+npm run test:e2e      # Suite Playwright (Desktop, Tablet, Mobile)
+```
 
-El [Sprint 001](development/sprints/SPRINT-001/SPRINT.md) deja cerrados arquitectura, módulos, tareas, pruebas, operación y trazabilidad. Está preparado para revisión, pero todavía no contiene código de producto.
+## Verificación Offline del Sorteo
+
+Al completarse el sorteo (posición 16), el payload canónico se verifica mediante:
+
+```bash
+echo -n '<CANONICAL_PAYLOAD>' | shasum -a 256
+```
+
+El resultado coincide exactamente con el `commitmentHash` publicado al inicio del evento.

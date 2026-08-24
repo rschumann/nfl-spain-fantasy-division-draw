@@ -4,10 +4,17 @@
 !.env.example
 node_modules/
 dist/
+dist-server/
 build/
 coverage/
 .cache/
 *.log
 .data/
+.data-test/
+.data-test-no-leak/
+.data-test-repo/
+.data-test-timeline/
 .firebase/
 firebase-debug.log
+test-results/
+playwright-report/

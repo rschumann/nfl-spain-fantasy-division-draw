@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { bootstrap } from './bootstrap.js';
 
 async function main(): Promise<void> {

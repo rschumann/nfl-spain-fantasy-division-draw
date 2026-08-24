@@ -18,7 +18,10 @@ export default defineConfig({
     },
     {
       name: 'tablet',
-      use: { ...devices['iPad Pro 11'], viewport: { width: 768, height: 1024 } }
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 768, height: 1024 }
+      }
     },
     {
       name: 'mobile-chrome',
@@ -26,9 +29,22 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run build:client && npx tsx src/server/index.ts',
     url: 'http://127.0.0.1:3000/api/health',
     reuseExistingServer: !process.env.CI,
-    timeout: 15000
+    timeout: 30000,
+    env: {
+      APP_ENV: 'local',
+      HOST: '127.0.0.1',
+      PORT: '3000',
+      DRAW_EVENT_ID: 'nfl-spain-26-27',
+      LEAGUE_NAME: 'NFL Spain',
+      SEASON_LABEL: '26-27',
+      DRAW_TIMEZONE: 'Europe/Madrid',
+      DRAW_START_AT: 'now',
+      DRAW_REVEAL_INTERVAL_SECONDS: '120',
+      DRAW_RESET_ON_START: 'true',
+      DRAW_STATE_PATH: '.data/e2e-draw-state.json'
+    }
   }
 });

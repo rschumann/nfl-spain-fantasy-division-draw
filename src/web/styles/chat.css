@@ -89,7 +89,7 @@
 }
 
 .chat-send-btn {
-  background: var(--color-accent);
+  background: #0969da;
   color: #ffffff;
   border: none;
   border-radius: var(--radius-sm);
@@ -103,7 +103,7 @@
   position: fixed;
   bottom: var(--space-md);
   right: var(--space-md);
-  background: var(--color-accent);
+  background: #0969da;
   color: #ffffff;
   border: none;
   border-radius: 9999px;
