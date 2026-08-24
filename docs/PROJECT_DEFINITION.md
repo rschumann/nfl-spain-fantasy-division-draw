@@ -6,6 +6,10 @@
 
 Nombre técnico provisional: `nfl-spain-fantasy-division-draw`.
 
+- Liga mostrada: `NFL Spain`.
+- Temporada: `26-27`.
+- Zona horaria: `Europe/Madrid`.
+
 ## Problema
 
 La liga tiene 16 equipos y necesita repartirlos de forma aleatoria, transparente y entretenida entre cuatro divisiones de cuatro equipos. El resultado no debe publicarse de golpe: la experiencia debe parecerse a un sorteo deportivo en directo, con una nueva asignación cada dos minutos.
@@ -81,9 +85,10 @@ Al terminar, las cuatro divisiones contienen cuatro equipos cada una, los 16 equ
 
 | Decisión | Estado | Propuesta |
 |---|---|---|
-| Fecha y hora de inicio | Pendiente | La indicará el propietario |
-| Zona horaria | Pendiente | `Europe/Madrid` |
-| Nombre de temporada | Pendiente | Texto configurable |
+| Fecha/hora de prueba local | Confirmada | `DRAW_START_AT=now` |
+| Fecha/hora de producción | Pendiente | Se configurará en ISO 8601 antes del bloqueo |
+| Zona horaria | Confirmada | `Europe/Madrid` |
+| Nombre de liga | Confirmado | `NFL Spain` |
+| Nombre de temporada | Confirmado | `26-27` |
 | URL y alojamiento | Pendiente | Elegir durante arquitectura |
 | Tecnología | Pendiente | Elegir la opción mínima que garantice estado servidor y persistencia |
-

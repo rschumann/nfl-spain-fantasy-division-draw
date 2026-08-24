@@ -11,12 +11,16 @@ Aplicación pública y minimalista para sortear los 16 equipos de la liga NFL Sp
 - [Definición del proyecto](docs/PROJECT_DEFINITION.md)
 - [Especificación del producto](docs/specs/PRODUCT_SPEC.md)
 - [Reglas del sorteo](docs/specs/DRAW_RULES.md)
+- [Configuración por entorno](docs/specs/CONFIGURATION.md)
 - [Especificación de interfaz](docs/specs/UI_SPEC.md)
 - [Criterios de aceptación](docs/specs/ACCEPTANCE_CRITERIA.md)
 
-## Datos pendientes antes de implementar
+## Configuración confirmada
 
-1. Fecha y hora exactas del inicio.
-2. Confirmación de la zona horaria; propuesta: `Europe/Madrid`.
-3. Nombre de la temporada que se mostrará.
+- Liga: `NFL Spain`.
+- Temporada: `26-27`.
+- Zona horaria: `Europe/Madrid`.
+- Pruebas locales: `DRAW_START_AT=now`, resuelto al arrancar el servidor local.
+- Producción: fecha y hora todavía pendientes.
 
+La plantilla versionada está en [`.env.example`](.env.example). La configuración local activa vive en `.env.local` y no se versiona.

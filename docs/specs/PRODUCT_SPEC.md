@@ -1,5 +1,12 @@
 # Especificación del producto
 
+## 0. Identidad del evento
+
+- Liga: `NFL Spain`.
+- Temporada: `26-27`.
+- Zona horaria: `Europe/Madrid`.
+- Intervalo: `120` segundos.
+
 ## 1. Entidades del sorteo
 
 ### Divisiones
@@ -129,7 +136,9 @@ La representación pública omite cualquier `Assignment` futura.
 
 ## 7. Configuración del MVP
 
-No se necesita panel de administración. La configuración se prepara mediante datos versionados o una operación protegida de despliegue, se revisa y se bloquea antes del evento.
+No se necesita panel de administración. La configuración se inyecta mediante variables de entorno validadas al arrancar el servidor, se revisa y se bloquea antes del evento.
+
+En local, `DRAW_START_AT=now` resuelve `startAt` una sola vez durante el arranque. Así cada prueba empieza con la hora actual de Madrid. Este valor está prohibido en producción, donde `DRAW_START_AT` debe ser una fecha ISO 8601 explícita con offset.
 
 ## 8. Errores esperados
 
@@ -138,4 +147,3 @@ No se necesita panel de administración. La configuración se prepara mediante d
 - **Respuesta inválida:** no revelar nada nuevo; reintentar y registrar el error.
 - **Evento no configurado:** mostrar una pantalla neutral, nunca datos parciales.
 - **Evento terminado:** servir directamente el estado final.
-

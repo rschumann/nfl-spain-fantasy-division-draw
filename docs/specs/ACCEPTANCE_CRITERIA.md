@@ -10,6 +10,8 @@
 
 ## Programación y tiempo
 
+- [ ] En local, `DRAW_START_AT=now` se resuelve una sola vez al arrancar.
+- [ ] Todas las fechas se presentan en `Europe/Madrid`.
 - [ ] Antes de `startAt`, no hay asignaciones visibles.
 - [ ] La primera asignación aparece en `startAt + 120 segundos`.
 - [ ] Cada asignación posterior aparece 120 segundos después de la anterior.
@@ -48,6 +50,7 @@
 ## Stop gates antes de producción
 
 - [ ] Fecha, hora y zona horaria aprobadas explícitamente.
+- [ ] Producción rechaza `DRAW_START_AT=now`.
 - [ ] Nombres de los 16 equipos aprobados explícitamente.
 - [ ] Ensayo completo con otra semilla y horario acelerado.
 - [ ] Auditoría de filtración de resultados futuros superada.

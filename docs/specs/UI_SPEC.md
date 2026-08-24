@@ -8,8 +8,8 @@ Una sola pantalla, limpia y deportiva. Debe recordar el ritmo de un sorteo como 
 
 ### Cabecera
 
-- Título: `NFL Spain Fantasy`
-- Subtítulo: `Sorteo de divisiones · [Temporada]`
+- Título: `NFL Spain`
+- Subtítulo: `Sorteo de divisiones · Temporada 26-27`
 - Estado breve: programado, en directo o finalizado
 
 ### Área principal de sorteo
@@ -43,8 +43,8 @@ Lista compacta de los equipos aún no revelados. Un equipo desaparece de esta li
 ## Boceto textual
 
 ```text
-NFL Spain Fantasy                         EN DIRECTO
-Sorteo de divisiones · [Temporada]
+NFL Spain                                 EN DIRECTO
+Sorteo de divisiones · Temporada 26-27
 
                     SIGUIENTE EQUIPO EN
                            01:37
@@ -85,4 +85,3 @@ Equipos pendientes: La Osera · London Viking · Nico · ...
 ## Criterio de simplicidad
 
 No usar navegación, carruseles, confeti continuo, vídeo de fondo, logos no licenciados ni panel de administración público.
-
