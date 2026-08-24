@@ -1,3 +1,5 @@
+import { existsSync, unlinkSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect, beforeEach } from 'vitest';
 import fastify from 'fastify';
 import { createChatRoutes } from '../../src/server/routes/chat-route.js';
@@ -7,7 +9,7 @@ describe('Chat Routes and Message Store', () => {
   let chatStore: ChatStore;
 
   beforeEach(() => {
-    chatStore = new ChatStore(5);
+    chatStore = new ChatStore(undefined, 5);
   });
 
   it('handles message storage and trimming', () => {
@@ -19,6 +21,17 @@ describe('Chat Routes and Message Store', () => {
     expect(msgs[0]?.body).toBe('Msg 3');
     chatStore.clear();
     expect(chatStore.getMessages()).toHaveLength(0);
+  });
+
+  it('persists and reloads messages to and from disk', () => {
+    const tmp = resolve(process.cwd(), '.data/test-chat.json');
+    if (existsSync(tmp)) unlinkSync(tmp);
+    const store = new ChatStore(tmp, 5);
+    store.addMessage('t1', 'Team 1', 'Persistent msg');
+    const reloaded = new ChatStore(tmp, 5);
+    expect(reloaded.getMessages()).toHaveLength(1);
+    reloaded.clear();
+    if (existsSync(tmp)) unlinkSync(tmp);
   });
 
   it('posts and gets messages with presence info', async () => {

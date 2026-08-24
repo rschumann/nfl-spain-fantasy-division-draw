@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import crypto from 'node:crypto';
 
 export interface ServerChatMessage {
@@ -11,10 +13,36 @@ export interface ServerChatMessage {
 export class ChatStore {
   private readonly messages: ServerChatMessage[] = [];
   private readonly presence = new Map<string, number>();
-  private readonly maxMessages: number;
 
-  constructor(maxMessages = 500) {
-    this.maxMessages = maxMessages;
+  constructor(
+    private readonly storagePath?: string,
+    private readonly maxMessages = 500
+  ) {
+    this.loadFromDisk();
+  }
+
+  private loadFromDisk(): void {
+    if (!this.storagePath || !existsSync(this.storagePath)) return;
+    try {
+      const raw = readFileSync(this.storagePath, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        this.messages.push(...parsed.slice(-this.maxMessages));
+      }
+    } catch {
+      // Non-fatal if parse error
+    }
+  }
+
+  private saveToDisk(): void {
+    if (!this.storagePath) return;
+    try {
+      const dir = dirname(this.storagePath);
+      if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+      writeFileSync(this.storagePath, JSON.stringify(this.messages, null, 2), 'utf8');
+    } catch {
+      // Non-fatal if write error
+    }
   }
 
   touchPresence(teamId: string): void {
@@ -43,6 +71,7 @@ export class ChatStore {
     if (this.messages.length > this.maxMessages) {
       this.messages.splice(0, this.messages.length - this.maxMessages);
     }
+    this.saveToDisk();
     return msg;
   }
 
@@ -54,5 +83,6 @@ export class ChatStore {
   clear(): void {
     this.messages.length = 0;
     this.presence.clear();
+    this.saveToDisk();
   }
 }

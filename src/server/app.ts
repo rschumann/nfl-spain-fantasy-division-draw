@@ -76,7 +76,11 @@ export async function createServerApp(
   deps: ServerDependencies
 ): Promise<FastifyInstance> {
   const app = fastify({ logger: false });
-  const store = deps.chatStore ?? new ChatStore();
+  const chatFile =
+    deps.config.env === 'test'
+      ? undefined
+      : resolve(process.cwd(), '.data/chat-messages.json');
+  const store = deps.chatStore ?? new ChatStore(chatFile);
   const registry = deps.registry ?? new TeamRegistry(new EspnFantasyClient());
   await registerSecurityHeaders(app);
   registerStaticAssets(app);
