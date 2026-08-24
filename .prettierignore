@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-server
+coverage
+.data
+.firebase
+package-lock.json
+*.log
+*.md

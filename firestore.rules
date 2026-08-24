@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /rooms/{roomId}/messages/{messageId} {
+      allow read: if request.auth != null && roomId == 'nfl-spain-26-27';
+      allow create: if request.auth != null
+        && roomId == 'nfl-spain-26-27'
+        && request.resource.data.keys().hasOnly(['uid', 'teamId', 'body', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.teamId in [
+          'madrid-steelers', 'toledo-patriots', 'la-osera', 'london-viking',
+          'nico', 'ohio-dolphins', 'camioneros', 'wolverines',
+          'barakaldo', 'daniel', 'samuel', 'sant-boi-chargers',
+          'bcn-giants', 'juanito', 'navarra-colts', 'xisko'
+        ]
+        && request.resource.data.body is string
+        && request.resource.data.body.size() >= 1
+        && request.resource.data.body.size() <= 500
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}
