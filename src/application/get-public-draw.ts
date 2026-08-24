@@ -1,12 +1,13 @@
 import type { Clock, DrawRepository } from './ports.js';
 import type { AppConfig } from '../config/load-config.js';
-import type { PublicDrawDto } from '../domain/types.js';
+import type { PublicDrawDto, Team } from '../domain/types.js';
 import { computePublicDrawState } from '../domain/public-state.js';
 
 export async function getPublicDrawState(
   config: AppConfig,
   repository: DrawRepository,
-  clock: Clock
+  clock: Clock,
+  liveTeams?: readonly Team[]
 ): Promise<PublicDrawDto> {
   const lockedState = await repository.loadLockedDraw(config.eventId);
   if (!lockedState) {
@@ -14,7 +15,7 @@ export async function getPublicDrawState(
   }
   return computePublicDrawState(
     lockedState,
-    config.teams,
+    liveTeams || config.teams,
     config.divisions,
     {
       leagueName: config.leagueName,

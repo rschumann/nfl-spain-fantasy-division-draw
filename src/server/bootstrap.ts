@@ -2,6 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import { SystemClock } from '../adapters/system-clock.js';
 import { NodeEntropy } from '../adapters/node-entropy.js';
 import { FileDrawRepository } from '../adapters/file-draw-repository.js';
+import { EspnFantasyClient } from '../adapters/espn-client.js';
+import { TeamRegistry } from './team-registry.js';
 import { loadConfig, type AppConfig } from '../config/load-config.js';
 import { initializeDraw } from '../application/initialize-draw.js';
 import { createServerApp } from './app.js';
@@ -25,7 +27,11 @@ export async function bootstrap(
     `Draw locked: eventId=${lockedState.eventId} commitment=${lockedState.commitmentHash.substring(0, 16)}...`
   );
 
-  const app = await createServerApp({ config, repository, clock });
+  const registry = new TeamRegistry(new EspnFantasyClient());
+  await registry.syncWithEspn();
+  registry.startPeriodicSync(60000);
+
+  const app = await createServerApp({ config, repository, clock, registry });
 
   return {
     app,

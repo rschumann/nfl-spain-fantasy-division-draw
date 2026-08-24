@@ -20,12 +20,14 @@ export interface PublicStateMeta {
 
 function createPublicAssignment(
   a: Assignment,
-  teamMap: Map<string, string>
+  teamMap: Map<string, Team>
 ): PublicAssignment {
+  const t = teamMap.get(a.teamId);
   return {
     position: a.position,
     teamId: a.teamId,
-    teamName: teamMap.get(a.teamId) || a.teamId,
+    teamName: t ? t.name : a.teamId,
+    logoUrl: t?.logoUrl,
     divisionId: a.divisionId,
     revealAt: a.revealAt
   };
@@ -65,7 +67,7 @@ function buildVerification(
 }
 
 function filterRevealed(state: LockedDrawState, teams: readonly Team[], nowMs: number) {
-  const teamMap = new Map(teams.map((t) => [t.id, t.name]));
+  const teamMap = new Map(teams.map((t) => [t.id, t]));
   const raw = state.assignments.filter((a) => new Date(a.revealAt).getTime() <= nowMs);
   const publicAssignments = raw.map((a) => createPublicAssignment(a, teamMap));
   const assignedTeamIds = new Set(raw.map((a) => a.teamId));

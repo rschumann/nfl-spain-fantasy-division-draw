@@ -3,6 +3,7 @@ export type DivisionId = 'NORTH' | 'EAST' | 'WEST' | 'SOUTH';
 export interface Team {
   readonly id: string;
   readonly name: string;
+  readonly logoUrl?: string;
 }
 
 export interface Division {
@@ -42,6 +43,7 @@ export interface PublicAssignment {
   readonly position: number;
   readonly teamId: string;
   readonly teamName: string;
+  readonly logoUrl?: string;
   readonly divisionId: DivisionId;
   readonly revealAt: string;
 }

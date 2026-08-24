@@ -5,9 +5,12 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { AppConfig } from '../config/load-config.js';
 import type { Clock, DrawRepository } from '../application/ports.js';
+import { EspnFantasyClient } from '../adapters/espn-client.js';
+import { TeamRegistry } from './team-registry.js';
 import { drawRoute } from './routes/draw-route.js';
 import { healthRoute } from './routes/health-route.js';
-import { authRoutes } from './routes/auth-route.js';
+import { createAuthRoutes } from './routes/auth-route.js';
+import { createTeamRoutes } from './routes/team-route.js';
 import { createChatRoutes } from './routes/chat-route.js';
 import { ChatStore } from './chat-store.js';
 
@@ -16,6 +19,7 @@ export interface ServerDependencies {
   readonly repository: DrawRepository;
   readonly clock: Clock;
   readonly chatStore?: ChatStore;
+  readonly registry?: TeamRegistry;
 }
 
 async function registerSecurityHeaders(app: FastifyInstance): Promise<void> {
@@ -38,7 +42,7 @@ async function registerSecurityHeaders(app: FastifyInstance): Promise<void> {
           'https://*.firebaseio.com'
         ],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
+        imgSrc: ["'self'", 'data:', 'https://g.espncdn.com', 'https://*.espncdn.com'],
         frameSrc: ["'self'"]
       }
     }
@@ -72,11 +76,13 @@ export async function createServerApp(
 ): Promise<FastifyInstance> {
   const app = fastify({ logger: false });
   const store = deps.chatStore ?? new ChatStore();
+  const registry = deps.registry ?? new TeamRegistry(new EspnFantasyClient());
   await registerSecurityHeaders(app);
   registerStaticAssets(app);
-  await app.register(drawRoute, deps);
+  await app.register(drawRoute, { ...deps, registry });
   await app.register(healthRoute, deps);
-  await app.register(authRoutes);
+  await app.register(createAuthRoutes(registry));
+  await app.register(createTeamRoutes({ registry }));
   await app.register(createChatRoutes(store));
   setupErrorHandlers(app);
   return app;

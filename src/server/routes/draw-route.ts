@@ -1,12 +1,14 @@
 import type { FastifyPluginAsync } from 'fastify';
 import type { AppConfig } from '../../config/load-config.js';
 import type { Clock, DrawRepository } from '../../application/ports.js';
+import type { TeamRegistry } from '../team-registry.js';
 import { getPublicDrawState } from '../../application/get-public-draw.js';
 
 export interface DrawRouteOptions {
   config: AppConfig;
   repository: DrawRepository;
   clock: Clock;
+  registry?: TeamRegistry;
 }
 
 export const drawRoute: FastifyPluginAsync<DrawRouteOptions> = async (fastify, opts) => {
@@ -17,6 +19,7 @@ export const drawRoute: FastifyPluginAsync<DrawRouteOptions> = async (fastify, o
     );
     reply.header('Pragma', 'no-cache');
     reply.header('Expires', '0');
-    return getPublicDrawState(opts.config, opts.repository, opts.clock);
+    const teams = opts.registry ? opts.registry.getTeams() : opts.config.teams;
+    return getPublicDrawState(opts.config, opts.repository, opts.clock, teams);
   });
 };

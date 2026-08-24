@@ -1,11 +1,19 @@
 import type { Team } from '../domain/types.js';
 
-function formatChipContent(name: string, isOnline: boolean, isMyTeam: boolean): string {
+function formatChipContent(
+  name: string,
+  isOnline: boolean,
+  isMyTeam: boolean,
+  logoUrl?: string
+): string {
   const dot = isOnline ? '<span class="online-dot"></span> ' : '';
+  const logo = logoUrl
+    ? `<img src="${logoUrl}" alt="" class="team-logo-icon" width="16" height="16" /> `
+    : '';
   if (isMyTeam) {
-    return `<span class="my-team-star">★</span> ${dot}<strong>${name}</strong> <span class="my-team-tag">Tú</span>`;
+    return `<span class="my-team-star">★</span> ${logo}${dot}<strong>${name}</strong> <span class="my-team-tag">Tú</span>`;
   }
-  return isOnline ? `${dot}${name}` : name;
+  return `${logo}${dot}${name}`;
 }
 
 function renderChips(
@@ -31,7 +39,7 @@ function renderChips(
     if (isMyTeam) cls += ' is-my-team';
     chip.className = cls;
     chip.setAttribute('data-team-id', team.id);
-    chip.innerHTML = formatChipContent(team.name, isOnline, isMyTeam);
+    chip.innerHTML = formatChipContent(team.name, isOnline, isMyTeam, team.logoUrl);
     container.appendChild(chip);
   }
 }
