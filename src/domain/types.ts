@@ -1,4 +1,4 @@
-export type DivisionId = 'NORTH' | 'EAST' | 'WEST' | 'SOUTH';
+export type DivisionId = string;
 
 export interface Team {
   readonly id: string;

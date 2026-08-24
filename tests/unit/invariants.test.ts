@@ -27,7 +27,7 @@ describe('Draw Invariants Detailed Validation (Task 03)', () => {
       120
     );
     expect(res1.valid).toBe(false);
-    expect(res1.errors.some((e) => e.includes('Expected 16 teams'))).toBe(true);
+    expect(res1.errors.some((e) => e.includes('Expected 15 assignments'))).toBe(true);
 
     const dupTeams: Team[] = [
       ...SAMPLE_TEAMS.slice(0, 15),
@@ -45,7 +45,7 @@ describe('Draw Invariants Detailed Validation (Task 03)', () => {
   });
 
   it('detects invalid division count and duplicate divisions', () => {
-    const fewDivs = SAMPLE_DIVISIONS.slice(0, 3);
+    const fewDivs = SAMPLE_DIVISIONS.slice(0, 1);
     const res1 = validateDrawInvariants(
       SAMPLE_TEAMS,
       fewDivs,
@@ -54,9 +54,14 @@ describe('Draw Invariants Detailed Validation (Task 03)', () => {
       120
     );
     expect(res1.valid).toBe(false);
-    expect(res1.errors.some((e) => e.includes('Expected 4 divisions'))).toBe(true);
+    expect(res1.errors.some((e) => e.includes('Expected at least 2 divisions'))).toBe(
+      true
+    );
 
-    const dupDivs: Division[] = [...fewDivs, { id: fewDivs[0]!.id, name: 'Dup' }];
+    const dupDivs: Division[] = [
+      ...SAMPLE_DIVISIONS,
+      { id: SAMPLE_DIVISIONS[0]!.id, name: 'Dup' }
+    ];
     const res2 = validateDrawInvariants(
       SAMPLE_TEAMS,
       dupDivs,

@@ -13,11 +13,17 @@ export interface PlanOptions {
   readonly lockedAt: string;
 }
 
-function createDivisionSlots(divisions: readonly Division[]): DivisionId[] {
+function createDivisionSlots(
+  divisions: readonly Division[],
+  teamCount: number
+): DivisionId[] {
   const slots: DivisionId[] = [];
-  for (const div of divisions) {
-    for (let i = 0; i < 4; i++) slots.push(div.id);
-  }
+  const baseCap = Math.floor(teamCount / divisions.length);
+  const remainder = teamCount % divisions.length;
+  divisions.forEach((div, idx) => {
+    const count = baseCap + (idx < remainder ? 1 : 0);
+    for (let i = 0; i < count; i++) slots.push(div.id);
+  });
   return slots;
 }
 
@@ -43,9 +49,10 @@ function shuffleTeamsAndSlots(
 ): { teams: Team[]; slots: DivisionId[] } {
   const teamStream = new DeterministicRandomStream(seedHex, 'teams');
   const slotStream = new DeterministicRandomStream(seedHex, 'division-slots');
+  const rawSlots = createDivisionSlots(divisions, teams.length);
   return {
     teams: fisherYatesShuffle(teams, teamStream),
-    slots: fisherYatesShuffle(createDivisionSlots(divisions), slotStream)
+    slots: fisherYatesShuffle(rawSlots, slotStream)
   };
 }
 

@@ -23,6 +23,7 @@
     "deps:check": "depcruise --config .dependency-cruiser.cjs src tests",
     "verify:limits": "node scripts/verify-file-limits.mjs",
     "verify:path": "node scripts/verify-private-path.mjs",
+    "links": "node scripts/print-links.mjs",
     "verify": "npm run format:check && npm run lint && npm run verify:limits && npm run typecheck && npm run deps:check && npm run verify:path && npm run test:coverage && npm run build"
   },
   "dependencies": {

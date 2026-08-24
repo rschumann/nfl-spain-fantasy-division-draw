@@ -19,6 +19,19 @@ describe('Configuration validation (Task 02)', () => {
     expect(config.configFingerprint).toHaveLength(64);
   });
 
+  it('supports custom DIVISIONS_COUNT and DIVISIONS_NAMES', () => {
+    const envCount = { ...VALID_ENV_LOCAL, DIVISIONS_COUNT: '2' };
+    const conf2 = loadConfig(envCount, clock);
+    expect(conf2.divisions).toHaveLength(2);
+    expect(conf2.divisions[0]?.name).toBe('División 1');
+
+    const envNames = { ...VALID_ENV_LOCAL, DIVISIONS_NAMES: 'Norte, Sur, Centro' };
+    const confNames = loadConfig(envNames, clock);
+    expect(confNames.divisions).toHaveLength(3);
+    expect(confNames.divisions[0]?.name).toBe('Norte');
+    expect(confNames.divisions[2]?.name).toBe('Centro');
+  });
+
   it('loads valid production configuration with ISO 8601 offset', () => {
     const config = loadConfig(VALID_ENV_PROD, clock);
     expect(config.env).toBe('production');

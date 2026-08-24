@@ -68,12 +68,12 @@ function renderDivisionCard(
 
   const header = document.createElement('div');
   header.className = 'division-header';
-  header.textContent = `${division.name} (${division.assignments.length}/4)`;
+  header.textContent = `${division.name} (${division.assignments.length}/${division.capacity})`;
   card.appendChild(header);
 
   const list = document.createElement('ul');
   list.className = 'slot-list';
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < division.capacity; i++) {
     const assignment = division.assignments[i];
     list.appendChild(createSlotElement(assignment, onlineTeamIds, myTeamId));
   }

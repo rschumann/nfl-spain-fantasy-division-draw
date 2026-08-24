@@ -28,8 +28,9 @@ export async function bootstrap(
   );
 
   const registry = new TeamRegistry(new EspnFantasyClient());
-  await registry.syncWithEspn();
-  registry.startPeriodicSync(60000);
+  const target = config.espnEndpointUrl || config.espnLeagueId;
+  await registry.syncWithEspn(target, config.espnSeason);
+  registry.startPeriodicSync(60000, target, config.espnSeason);
 
   const app = await createServerApp({ config, repository, clock, registry });
 

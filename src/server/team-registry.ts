@@ -38,10 +38,10 @@ export class TeamRegistry {
     };
   }
 
-  async syncWithEspn(leagueId = '763332624', season = '2026'): Promise<readonly Team[]> {
+  async syncWithEspn(target?: string, season = '2026'): Promise<readonly Team[]> {
     if (!this.espnClient) return this.teams;
     try {
-      const fresh = await this.espnClient.fetchTeams(leagueId, season);
+      const fresh = await this.espnClient.fetchTeams(target, season);
       if (fresh.length === 16) {
         this.teams = fresh;
       }
@@ -51,10 +51,10 @@ export class TeamRegistry {
     return this.teams;
   }
 
-  startPeriodicSync(intervalMs = 60000, leagueId = '763332624', season = '2026'): void {
+  startPeriodicSync(intervalMs = 60000, target?: string, season = '2026'): void {
     if (this.timer) clearInterval(this.timer);
     this.timer = setInterval(() => {
-      void this.syncWithEspn(leagueId, season);
+      void this.syncWithEspn(target, season);
     }, intervalMs);
   }
 

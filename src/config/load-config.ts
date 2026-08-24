@@ -24,6 +24,10 @@ export interface AppConfig {
   readonly statePath: string;
   readonly host: string;
   readonly port: number;
+  readonly baseUrl: string;
+  readonly espnEndpointUrl?: string;
+  readonly espnLeagueId: string;
+  readonly espnSeason: string;
   readonly configFingerprint: string;
   readonly teams: readonly Team[];
   readonly divisions: readonly Division[];
@@ -42,6 +46,23 @@ function resolveStartAt(rawStartAt: string, env: string, clock: Clock): string {
     throw new Error(`Invalid ISO 8601 start timestamp: ${rawStartAt}`);
   }
   return date.toISOString();
+}
+
+function resolveDivisions(p: ParsedRawEnv): readonly Division[] {
+  if (p.DIVISIONS_NAMES && p.DIVISIONS_NAMES.trim()) {
+    const raw = p.DIVISIONS_NAMES.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (raw.length >= 2) {
+      return raw.map((name, idx) => ({ id: `DIV_${idx + 1}`, name }));
+    }
+  }
+  if (p.DIVISIONS_COUNT === 4) return divisionsData as readonly Division[];
+  const results: Division[] = [];
+  for (let i = 1; i <= p.DIVISIONS_COUNT; i++) {
+    results.push({ id: `DIV_${i}`, name: `División ${i}` });
+  }
+  return results;
 }
 
 function validateProductionRules(parsed: ParsedRawEnv): void {
@@ -81,15 +102,24 @@ export function computeConfigFingerprint(
   return createHash('sha256').update(parts.join('|'), 'utf8').digest('hex');
 }
 
-function createChatConfig(p: ParsedRawEnv): ChatConfig {
+function createServerConfig(p: ParsedRawEnv) {
   return {
-    enabled: p.VITE_CHAT_ENABLED,
-    roomId: p.VITE_CHAT_ROOM_ID,
-    useEmulators: p.VITE_FIREBASE_USE_EMULATORS
+    host: p.HOST,
+    port: p.PORT,
+    baseUrl: p.BASE_URL,
+    espnEndpointUrl: p.ESPN_ENDPOINT_URL,
+    espnLeagueId: p.ESPN_LEAGUE_ID,
+    espnSeason: p.ESPN_SEASON
   };
 }
 
-function buildAppConfig(p: ParsedRawEnv, startAtUtc: string, fp: string): AppConfig {
+function buildAppConfig(
+  p: ParsedRawEnv,
+  startAtUtc: string,
+  fp: string,
+  divisions: readonly Division[]
+): AppConfig {
+  const srv = createServerConfig(p);
   return {
     env: p.APP_ENV,
     eventId: p.DRAW_EVENT_ID,
@@ -100,12 +130,15 @@ function buildAppConfig(p: ParsedRawEnv, startAtUtc: string, fp: string): AppCon
     revealIntervalSeconds: p.DRAW_REVEAL_INTERVAL_SECONDS,
     resetOnStart: p.DRAW_RESET_ON_START,
     statePath: p.DRAW_STATE_PATH,
-    host: p.HOST,
-    port: p.PORT,
     configFingerprint: fp,
     teams: teamsData as readonly Team[],
-    divisions: divisionsData as readonly Division[],
-    chat: createChatConfig(p)
+    divisions,
+    chat: {
+      enabled: p.VITE_CHAT_ENABLED,
+      roomId: p.VITE_CHAT_ROOM_ID,
+      useEmulators: p.VITE_FIREBASE_USE_EMULATORS
+    },
+    ...srv
   };
 }
 
@@ -124,5 +157,5 @@ export function loadConfig(envRecord: Record<string, unknown>, clock: Clock): Ap
     startAtUtc,
     parsed.DRAW_REVEAL_INTERVAL_SECONDS
   );
-  return buildAppConfig(parsed, startAtUtc, fp);
+  return buildAppConfig(parsed, startAtUtc, fp, resolveDivisions(parsed));
 }

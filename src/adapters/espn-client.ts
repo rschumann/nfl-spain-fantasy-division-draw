@@ -39,11 +39,17 @@ function resolveName(team: RawEspnTeam, fallback: string): string {
   return locNick || fallback;
 }
 
+function buildUrl(target?: string, season = '2026'): string {
+  if (target && target.startsWith('http')) return target;
+  const leagueId = target || '763332624';
+  return `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${season}/segments/0/leagues/${leagueId}?view=mTeam&view=mSettings&view=mInvited`;
+}
+
 export class EspnFantasyClient {
   private readonly defaultMap = new Map(defaultTeams.map((t) => [t.id, t.name]));
 
-  async fetchTeams(leagueId = '763332624', season = '2026'): Promise<readonly Team[]> {
-    const url = `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${season}/segments/0/leagues/${leagueId}?view=mTeam&view=mSettings`;
+  async fetchTeams(target?: string, season = '2026'): Promise<readonly Team[]> {
+    const url = buildUrl(target, season);
     try {
       const res = await fetch(url, {
         headers: { Accept: 'application/json' },

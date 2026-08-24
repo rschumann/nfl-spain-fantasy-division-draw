@@ -35,27 +35,30 @@ function createPublicAssignment(
 
 function buildDivisions(
   divisions: readonly Division[],
-  revealed: readonly PublicAssignment[]
+  revealed: readonly PublicAssignment[],
+  teamCount: number
 ): readonly PublicDivision[] {
+  const cap = Math.ceil(teamCount / divisions.length);
   return divisions.map((div) => ({
     id: div.id,
     name: div.name,
-    capacity: 4,
+    capacity: cap,
     assignments: revealed.filter((a) => a.divisionId === div.id)
   }));
 }
 
-function deriveStatus(revealedCount: number): DrawStatus {
+function deriveStatus(revealedCount: number, totalTeams: number): DrawStatus {
   if (revealedCount === 0) return 'scheduled';
-  if (revealedCount === 16) return 'complete';
+  if (revealedCount === totalTeams) return 'complete';
   return 'running';
 }
 
 function buildVerification(
   state: LockedDrawState,
-  revealedCount: number
+  revealedCount: number,
+  totalTeams: number
 ): { canonicalPayload: string; seedHex: string } | null {
-  if (revealedCount < 16) return null;
+  if (revealedCount < totalTeams) return null;
   const canonical = canonicalizeDrawPlan({
     eventId: state.eventId,
     algorithmVersion: state.algorithmVersion,
@@ -78,6 +81,18 @@ function filterRevealed(state: LockedDrawState, teams: readonly Team[], nowMs: n
   };
 }
 
+function getPointers(
+  count: number,
+  assignments: readonly Assignment[],
+  pub: readonly PublicAssignment[],
+  total: number
+) {
+  return {
+    lastAssignment: count > 0 ? (pub[count - 1] ?? null) : null,
+    nextRevealAt: count < total ? (assignments[count]?.revealAt ?? null) : null
+  };
+}
+
 export function computePublicDrawState(
   state: LockedDrawState,
   teams: readonly Team[],
@@ -86,23 +101,24 @@ export function computePublicDrawState(
   now: Date
 ): PublicDrawDto {
   const r = filterRevealed(state, teams, now.getTime());
+  const cap = Math.ceil(teams.length / divisions.length);
+  const ptrs = getPointers(r.count, state.assignments, r.publicAssignments, teams.length);
   return {
     eventId: state.eventId,
     leagueName: meta.leagueName,
     seasonLabel: meta.seasonLabel,
     timezone: meta.timezone,
-    status: deriveStatus(r.count),
+    status: deriveStatus(r.count, teams.length),
     serverNow: now.toISOString(),
     startAt: meta.startAtUtc,
     revealIntervalSeconds: meta.interval,
     teamCount: teams.length,
-    divisionCapacity: 4,
+    divisionCapacity: cap,
     revealedCount: r.count,
     commitmentHash: state.commitmentHash,
     pendingTeams: r.pending,
-    divisions: buildDivisions(divisions, r.publicAssignments),
-    lastAssignment: r.count > 0 ? (r.publicAssignments[r.count - 1] ?? null) : null,
-    nextRevealAt: r.count < 16 ? (state.assignments[r.count]?.revealAt ?? null) : null,
-    verification: buildVerification(state, r.count)
+    divisions: buildDivisions(divisions, r.publicAssignments, teams.length),
+    verification: buildVerification(state, r.count, teams.length),
+    ...ptrs
   };
 }

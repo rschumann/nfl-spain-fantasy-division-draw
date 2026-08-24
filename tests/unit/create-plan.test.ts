@@ -25,8 +25,10 @@ describe('Draw Plan Creation & Invariants (Task 03)', () => {
     expect(plan.assignments[15]!.position).toBe(16);
     expect(plan.assignments[15]!.revealAt).toBe('2026-08-24T12:32:00.000Z');
 
-    const counts = { NORTH: 0, EAST: 0, WEST: 0, SOUTH: 0 };
-    plan.assignments.forEach((a) => counts[a.divisionId]++);
+    const counts: Record<string, number> = { NORTH: 0, EAST: 0, WEST: 0, SOUTH: 0 };
+    plan.assignments.forEach((a) => {
+      counts[a.divisionId] = (counts[a.divisionId] ?? 0) + 1;
+    });
     expect(counts).toEqual({ NORTH: 4, EAST: 4, WEST: 4, SOUTH: 4 });
   });
 

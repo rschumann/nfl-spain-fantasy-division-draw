@@ -25,6 +25,12 @@ export const rawEnvSchema = z.object({
   DRAW_STATE_PATH: z.string().min(1),
   HOST: z.string().default('127.0.0.1'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+  BASE_URL: z.string().default('http://127.0.0.1:3000'),
+  ESPN_ENDPOINT_URL: z.string().optional(),
+  ESPN_LEAGUE_ID: z.string().default('763332624'),
+  ESPN_SEASON: z.string().default('2026'),
+  DIVISIONS_COUNT: z.coerce.number().int().min(2).max(16).default(4),
+  DIVISIONS_NAMES: z.string().optional(),
   VITE_CHAT_ENABLED: z
     .enum(['true', 'false', '1', '0'])
     .default('true')
