@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   computeTimeOffsetMs,
   computeSecondsRemaining,
+  formatCountdown,
   formatMinutesSeconds
 } from '../../src/web/server-time.js';
 
@@ -34,12 +35,13 @@ describe('Server Time & Countdown Formatting (Task 06)', () => {
     expect(remaining).toBe(0);
   });
 
-  it('formats MM:SS correctly across time boundaries', () => {
+  it('formats MM:SS, HH:MM:SS and DD HH MM SS correctly', () => {
     expect(formatMinutesSeconds(0)).toBe('00:00');
     expect(formatMinutesSeconds(59)).toBe('00:59');
     expect(formatMinutesSeconds(60)).toBe('01:00');
     expect(formatMinutesSeconds(120)).toBe('02:00');
-    expect(formatMinutesSeconds(1920)).toBe('32:00');
+    expect(formatMinutesSeconds(7325)).toBe('02:02:05');
+    expect(formatCountdown(360704)).toBe('4d 04h 11m 44s');
     expect(formatMinutesSeconds(-10)).toBe('00:00');
   });
 });

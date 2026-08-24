@@ -20,11 +20,22 @@ export function computeSecondsRemaining(
   return Math.max(0, Math.ceil(diffMs / 1000));
 }
 
-export function formatMinutesSeconds(totalSeconds: number): string {
+export function formatCountdown(totalSeconds: number): string {
   const clamped = Math.max(0, Math.floor(totalSeconds));
-  const minutes = Math.floor(clamped / 60);
+  const days = Math.floor(clamped / 86400);
+  const hours = Math.floor((clamped % 86400) / 3600);
+  const minutes = Math.floor((clamped % 3600) / 60);
   const seconds = clamped % 60;
+
   const mm = minutes.toString().padStart(2, '0');
   const ss = seconds.toString().padStart(2, '0');
+  const hh = hours.toString().padStart(2, '0');
+
+  if (days > 0) return `${days}d ${hh}h ${mm}m ${ss}s`;
+  if (hours > 0) return `${hh}:${mm}:${ss}`;
   return `${mm}:${ss}`;
+}
+
+export function formatMinutesSeconds(totalSeconds: number): string {
+  return formatCountdown(totalSeconds);
 }
