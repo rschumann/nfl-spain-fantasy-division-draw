@@ -21,7 +21,7 @@ export class ChatStore {
     this.presence.set(teamId, Date.now());
   }
 
-  getOnlineTeamIds(thresholdMs = 15000): readonly string[] {
+  getOnlineTeamIds(thresholdMs = 60000): readonly string[] {
     const cutoff = Date.now() - thresholdMs;
     const online: string[] = [];
     for (const [teamId, seenAt] of this.presence.entries()) {

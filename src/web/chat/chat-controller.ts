@@ -8,6 +8,7 @@ import {
 } from './chat-session.js';
 import { fetchMessages, loginWithTeamKey, sendChatMessage } from './chat-api.js';
 import { ChatSheetController } from './chat-sheet.js';
+import { globalPresence } from '../presence.js';
 
 export class ChatController {
   private session: TeamSession | null = null;
@@ -140,6 +141,7 @@ export class ChatController {
   async syncMessages(): Promise<void> {
     if (!this.messagesListEl) return;
     const { messages, onlineTeamIds } = await fetchMessages(this.session?.key);
+    globalPresence.setOnline(onlineTeamIds);
     renderMessages(this.messagesListEl, messages, onlineTeamIds);
     this.updateOnlineStatus(onlineTeamIds);
     if (!this.session && this.badgeEl) {

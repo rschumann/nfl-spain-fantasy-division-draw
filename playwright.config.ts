@@ -31,7 +31,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run build:client && npx tsx src/server/index.ts',
     url: 'http://127.0.0.1:3000/api/health',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 30000,
     env: {
       APP_ENV: 'local',
@@ -41,7 +41,7 @@ export default defineConfig({
       LEAGUE_NAME: 'NFL Spain',
       SEASON_LABEL: '26-27',
       DRAW_TIMEZONE: 'Europe/Madrid',
-      DRAW_START_AT: 'now',
+      DRAW_START_AT: '2099-01-01T12:00:00.000Z',
       DRAW_REVEAL_INTERVAL_SECONDS: '120',
       DRAW_RESET_ON_START: 'true',
       DRAW_STATE_PATH: '.data/e2e-draw-state.json'

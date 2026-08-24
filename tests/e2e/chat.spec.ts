@@ -23,10 +23,10 @@ test.describe('Chat UI E2E with Team Key Authentication', () => {
     await page.locator('[data-emoji="🔥"]').click();
     await page.locator('[data-ref="chat-form"] button[type="submit"]').click();
 
-    await expect(page.locator('.chat-message-item').first()).toContainText(
+    await expect(page.locator('.chat-message-item').last()).toContainText(
       'Madrid Steelers'
     );
-    await expect(page.locator('.chat-message-body').first()).toContainText(
+    await expect(page.locator('.chat-message-body').last()).toContainText(
       '¡Madrid Steelers listos! 🔥'
     );
   });

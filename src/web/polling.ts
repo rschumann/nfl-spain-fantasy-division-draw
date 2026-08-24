@@ -6,6 +6,7 @@ import { renderHeader } from './render-header.js';
 import { renderDivisions } from './render-divisions.js';
 import { renderPendingTeams } from './render-pending.js';
 import { renderVerification } from './render-verification.js';
+import { globalPresence } from './presence.js';
 
 export class DrawSyncController {
   private currentDto: PublicDrawDto | null = null;
@@ -28,10 +29,11 @@ export class DrawSyncController {
     const target = dto.status === 'scheduled' ? dto.startAt : dto.nextRevealAt;
     const remaining = computeSecondsRemaining(target, this.offsetMs);
     const vm = createDrawViewModel(dto, remaining, this.isReconnecting);
+    const online = globalPresence.getOnline();
 
     renderHeader(this.container, vm);
-    renderDivisions(this.container, vm.divisions);
-    renderPendingTeams(this.container, vm.pendingTeams, vm.progressText);
+    renderDivisions(this.container, vm.divisions, online);
+    renderPendingTeams(this.container, vm.pendingTeams, vm.progressText, online);
     renderVerification(this.container, vm, dto);
   }
 
