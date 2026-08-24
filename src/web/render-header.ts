@@ -16,28 +16,35 @@ function renderMyTeamBadge(headerEl: HTMLElement, myTeam: UserTeamIdentity | nul
   }
 }
 
+function renderBrandInfo(container: HTMLElement, vm: DrawViewModel): void {
+  const brandTitle = container.querySelector('[data-ref="brand-title"]');
+  if (brandTitle) {
+    const link = brandTitle.querySelector('a');
+    if (link) {
+      link.textContent = vm.leagueName;
+    } else {
+      brandTitle.textContent = vm.leagueName;
+    }
+  }
+  const brandSubtitle = container.querySelector('[data-ref="brand-subtitle"]');
+  if (brandSubtitle) {
+    brandSubtitle.textContent = `Sorteo de divisiones · Temporada ${vm.seasonLabel}`;
+  }
+}
+
 export function renderHeader(
   container: HTMLElement,
   vm: DrawViewModel,
   myTeam: UserTeamIdentity | null = null
 ): void {
-  const brandTitle = container.querySelector('[data-ref="brand-title"]');
-  if (brandTitle) brandTitle.textContent = vm.leagueName;
-
-  const brandSubtitle = container.querySelector('[data-ref="brand-subtitle"]');
-  if (brandSubtitle) {
-    brandSubtitle.textContent = `Sorteo de divisiones · Temporada ${vm.seasonLabel}`;
-  }
-
+  renderBrandInfo(container, vm);
   const statusBadge = container.querySelector('[data-ref="status-badge"]');
   if (statusBadge) {
     statusBadge.textContent = vm.status;
     statusBadge.className = `status-badge ${vm.statusBadgeClass}`;
   }
-
   const appHeader = container.querySelector<HTMLElement>('.app-header');
   if (appHeader) renderMyTeamBadge(appHeader, myTeam);
-
   renderTimerHero(container, vm);
 }
 

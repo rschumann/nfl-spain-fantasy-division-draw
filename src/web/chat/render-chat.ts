@@ -7,7 +7,7 @@ export function buildChatLayout(container: HTMLElement): void {
       <h2 class="chat-title">Chat de la liga</h2>
       <div data-ref="chat-session-badge" class="chat-session-badge"></div>
     </div>
-    <ul data-ref="chat-messages" class="chat-messages" aria-live="polite"></ul>
+    <ul data-ref="chat-messages" class="chat-messages" tabindex="0" aria-label="Mensajes del chat" aria-live="polite"></ul>
     <div data-ref="chat-form-area" class="chat-form-area"></div>
   `;
 }
