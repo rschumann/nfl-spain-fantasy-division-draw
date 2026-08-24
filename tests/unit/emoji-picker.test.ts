@@ -43,6 +43,18 @@ describe('Emoji Picker Controller', () => {
     expect(popover.style.display).toBe('none');
   });
 
+  it('switches categories on tab click without closing popover', () => {
+    const controller = new EmojiPickerController(toggleBtn, popover, input);
+    controller.open();
+    const tabs = popover.querySelectorAll<HTMLButtonElement>('.emoji-tab-btn');
+    expect(tabs.length).toBeGreaterThan(1);
+    tabs[2]!.click();
+    expect(popover.style.display).toBe('block');
+    const buttons = popover.querySelectorAll('.emoji-btn');
+    expect(Array.from(buttons).some((b) => b.textContent === '🏈')).toBe(true);
+    controller.close();
+  });
+
   it('filters emojis via search input in real-time', () => {
     const controller = new EmojiPickerController(toggleBtn, popover, input);
     controller.open();
@@ -63,12 +75,12 @@ describe('Emoji Picker Controller', () => {
   it('inserts emoji on click at cursor position and updates value', () => {
     const controller = new EmojiPickerController(toggleBtn, popover, input);
     controller.open();
-    const footballBtn = Array.from(
+    const btn = Array.from(
       popover.querySelectorAll<HTMLButtonElement>('.emoji-btn')
     ).find((b) => b.textContent === '😀');
-    expect(footballBtn).toBeDefined();
+    expect(btn).toBeDefined();
 
-    footballBtn!.click();
+    btn!.click();
     expect(input.value).toBe('Hello 😀');
     controller.close();
   });

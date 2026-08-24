@@ -26,10 +26,7 @@ function createEmojiBtn(item: EmojiItem, onSelect: (ch: string) => void): HTMLEl
   btn.className = 'emoji-btn';
   btn.title = item.name;
   btn.textContent = item.char;
-  btn.onclick = (e) => {
-    e.stopPropagation();
-    onSelect(item.char);
-  };
+  btn.onclick = () => onSelect(item.char);
   return btn;
 }
 
@@ -51,12 +48,11 @@ export class EmojiPickerController {
       e.stopPropagation();
       this.toggle();
     };
+    this.popoverContainer.onclick = (e) => {
+      e.stopPropagation();
+    };
     document.addEventListener('click', (e) => {
-      if (
-        this.isOpen &&
-        !this.popoverContainer.contains(e.target as Node) &&
-        e.target !== this.toggleBtn
-      ) {
+      if (this.isOpen && e.target !== this.toggleBtn) {
         this.close();
       }
     });
