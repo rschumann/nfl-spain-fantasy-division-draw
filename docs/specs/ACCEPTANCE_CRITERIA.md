@@ -39,6 +39,19 @@
 - [ ] El modo de movimiento reducido elimina animaciones innecesarias.
 - [ ] Una pérdida de conexión muestra un estado honesto y conserva datos confirmados.
 
+## Chat
+
+- [ ] Dos navegadores reciben un mensaje nuevo sin recargar.
+- [ ] El chat funciona con autenticación anónima y una identidad local elegida de la lista de equipos.
+- [ ] Mensajes vacíos, de más de 500 caracteres o con campos extra son rechazados.
+- [ ] Un usuario solo puede crear mensajes con su propio Firebase UID.
+- [ ] Mensajes no se pueden editar ni borrar desde el cliente.
+- [ ] La UI renderiza texto con seguridad y no interpreta HTML.
+- [ ] Perder Firebase no detiene ni oculta el sorteo.
+- [ ] Desktop muestra sidebar; móvil muestra un bottom sheet accesible.
+- [ ] Firebase Emulator Suite cubre Auth, Firestore y Security Rules en local/CI.
+- [ ] App Check y reglas cerradas están activados antes de producción.
+
 ## Pruebas límite
 
 - [ ] Recarga un segundo antes y un segundo después de una revelación.

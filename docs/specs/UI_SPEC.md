@@ -40,6 +40,15 @@ Lista compacta de los equipos aún no revelados. Un equipo desaparece de esta li
 - Hash de compromiso en formato abreviado con opción de copiar.
 - Tras finalizar: control `Verificar sorteo` y explicación breve.
 
+### Chat de liga
+
+- Escritorio: panel lateral derecho de 320–360 px, dentro del layout y sin tapar el sorteo.
+- Cabecera: `Chat de la liga`, estado de conexión y botón para contraer.
+- Cuerpo: mensajes en orden cronológico, nombre del equipo, hora y burbuja sobria.
+- Composer fijo abajo, contador `0/500` y botón `Enviar`.
+- El chat es secundario; cuenta atrás y última asignación mantienen prioridad visual.
+- No copiar las pestañas `All`, `User Messages` o `League Assistant` de ESPN: solo existe una sala.
+
 ## Boceto textual
 
 ```text
@@ -50,13 +59,13 @@ Sorteo de divisiones · Temporada 26-27
                            01:37
                 Toledo Patriots  →  EAST
 
-┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
-│ NORTH          │ │ EAST           │ │ WEST           │ │ SOUTH          │
-│ Madrid Steelers│ │ Toledo Patriots│ │ Pendiente      │ │ BCN Giants     │
-│ Pendiente      │ │ Pendiente      │ │ Pendiente      │ │ Pendiente      │
-│ Pendiente      │ │ Pendiente      │ │ Pendiente      │ │ Pendiente      │
-│ Pendiente      │ │ Pendiente      │ │ Pendiente      │ │ Pendiente      │
-└────────────────┘ └────────────────┘ └────────────────┘ └────────────────┘
+┌────────────────────────────────────────────────────┐ ┌──────────────────┐
+│ NORTH       EAST        WEST         SOUTH         │ │ CHAT DE LA LIGA │
+│ Madrid      Toledo      Pendiente    BCN Giants    │ │ Madrid · 20:02  │
+│ Pendiente   Pendiente   Pendiente    Pendiente     │ │ Vamos allá      │
+│ Pendiente   Pendiente   Pendiente    Pendiente     │ │                  │
+│ Pendiente   Pendiente   Pendiente    Pendiente     │ │ [Mensaje…] Enviar│
+└────────────────────────────────────────────────────┘ └──────────────────┘
 
 Equipos pendientes: La Osera · London Viking · Nico · ...
 3 de 16 equipos sorteados
@@ -65,8 +74,9 @@ Equipos pendientes: La Osera · London Viking · Nico · ...
 ## Responsive
 
 - Escritorio: cuatro columnas.
-- Tablet: cuadrícula 2 × 2.
-- Móvil: una columna; cuenta atrás y última asignación permanecen arriba.
+- Tablet: sorteo 2 × 2 y chat contraído como botón inferior.
+- Móvil: una columna; chat en bottom sheet de hasta 70vh con badge de no leídos.
+- El panel móvil conserva el foco, se cierra con `Escape` y no bloquea permanentemente la cuenta atrás.
 - No permitir scroll horizontal.
 
 ## Movimiento y sonido

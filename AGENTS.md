@@ -11,8 +11,10 @@ These rules apply to all work in this repository.
 ## Modularity baseline
 
 - One responsibility per module.
-- Hand-written first-party source and test files must stay below 250 physical lines.
-- Functions, methods, hooks, and handlers must stay below 40 physical lines.
+- Target 80–120 physical lines for a cohesive production module.
+- Hand-written first-party source, test, script, and stylesheet files must stay below 180 physical lines.
+- Functions, methods, hooks, and handlers must stay below 30 physical lines.
+- Do not create tiny pass-through files merely to satisfy a line limit; cohesion wins inside the hard limits.
 - Put clock, randomness, persistence, network, rendering, and other side effects behind narrow explicit adapters.
 - Keep domain logic independent from UI and infrastructure.
 - Do not hide application logic in generated files, configuration, fixtures, schemas, or migrations.
@@ -22,6 +24,7 @@ These rules apply to all work in this repository.
 
 - Enforce file and function size limits in CI.
 - Enforce import boundaries and detect dependency cycles.
+- Keep domain imports pointing inward: `web/server/adapters -> application -> domain`.
 - Test draw invariants, server-time behavior, reload recovery, and accessibility.
 - Use focused tests for each module, then run the full repository gate.
 - Keep structural refactors separate from behavior changes.
@@ -32,4 +35,3 @@ These rules apply to all work in this repository.
 - Never expose unrevealed assignments through HTML, JavaScript bundles, API responses, logs, or client state.
 - Treat server time as authoritative. A browser tab must not control draw progress.
 - Once the production draw is locked, roster, divisions, start time, interval, and commitment cannot change silently.
-

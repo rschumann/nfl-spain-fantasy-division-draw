@@ -100,6 +100,10 @@ Resultados futuros no aparecen en el HTML, bundle, caché pública, respuestas d
 
 El servidor determina qué debe estar visible. La hora local solo anima la cuenta atrás entre sincronizaciones.
 
+### RF-11 — Chat de liga
+
+La misma página incluye un chat común para los equipos. Su comportamiento, identidad y límites están definidos en `CHAT_SPEC.md`; el chat no puede acceder al estado privado del sorteo ni bloquear sus revelaciones.
+
 ## 5. Requisitos no funcionales
 
 - **Responsive:** usable desde 360 px de ancho.
@@ -109,6 +113,7 @@ El servidor determina qué debe estar visible. La hora local solo anima la cuent
 - **Idempotencia:** pedir el estado repetidamente nunca crea otra asignación.
 - **Observabilidad segura:** registrar fallos y transiciones sin registrar resultados futuros antes de tiempo.
 - **Compatibilidad:** últimas versiones estables de Chrome, Safari, Firefox y Edge.
+- **Aislamiento:** un fallo de Firebase o del chat no degrada la lectura del sorteo.
 
 ## 6. Modelo lógico mínimo
 

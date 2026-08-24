@@ -54,12 +54,14 @@ Ejecutar un único sorteo programado, equilibrado y auditable sin depender de qu
 - Vista final del resultado.
 - Prueba pública de integridad al terminar el sorteo.
 - Diseño responsive para móvil y escritorio.
+- Chat común de la liga dentro de la misma página.
+- Mensajes de texto en tiempo real mediante un servicio gestionado, sin construir otro servidor de chat.
 
 ### Fuera de alcance
 
-- Login de participantes.
+- Login visible con email, contraseña u OAuth.
 - Integración o escritura automática en ESPN.
-- Chat, votaciones o comentarios.
+- Mensajes directos, reacciones, adjuntos o moderación avanzada.
 - Sorteos con restricciones deportivas complejas.
 - Múltiples ligas o temporadas administrables desde una interfaz.
 - App nativa móvil.
