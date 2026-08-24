@@ -1,4 +1,4 @@
-/* Chat Styles */
+/* Chat Sidebar & Drawer */
 .chat-section {
   display: flex;
   flex-direction: column;
@@ -100,24 +100,13 @@
 }
 
 .chat-form {
-  padding: var(--space-sm) var(--space-md) var(--space-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  position: relative;
+  padding: var(--space-md);
 }
 
-.chat-emoji-bar,
 .chat-input-row {
   display: flex;
   gap: var(--space-xs);
-}
-
-.emoji-btn {
-  background: none;
-  border: none;
-  font-size: 1.125rem;
-  cursor: pointer;
-  padding: 2px;
 }
 
 .chat-input {
@@ -126,7 +115,8 @@
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 10px 14px;
+  padding: 10px 42px 10px 14px;
+  font-size: 0.9375rem;
 }
 
 .chat-input:focus {

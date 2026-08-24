@@ -8,6 +8,7 @@ import {
 } from './chat-session.js';
 import { fetchMessages, loginWithTeamKey, sendChatMessage } from './chat-api.js';
 import { ChatSheetController } from './chat-sheet.js';
+import { EmojiPickerController } from './emoji-picker.js';
 import { globalPresence } from '../presence.js';
 
 export class ChatController {
@@ -52,23 +53,18 @@ export class ChatController {
     if (!this.formAreaEl || !this.badgeEl) return;
     renderSessionArea(this.formAreaEl, this.badgeEl, this.session, onlineCount);
     this.attachFormListeners();
-    this.attachEmojiListeners();
+    this.attachEmojiPicker();
   }
 
-  private attachEmojiListeners(): void {
-    const btns = this.container.querySelectorAll<HTMLButtonElement>('.emoji-btn');
-    btns.forEach((btn) => {
-      btn.onclick = () => {
-        const emoji = btn.dataset.emoji;
-        const input = this.container.querySelector<HTMLInputElement>(
-          '[data-ref="chat-input"]'
-        );
-        if (input && emoji) {
-          input.value += emoji;
-          input.focus();
-        }
-      };
-    });
+  private attachEmojiPicker(): void {
+    const toggle = this.container.querySelector<HTMLElement>(
+      '[data-ref="emoji-toggle-btn"]'
+    );
+    const pop = this.container.querySelector<HTMLElement>('[data-ref="emoji-popover"]');
+    const input = this.container.querySelector<HTMLInputElement>(
+      '[data-ref="chat-input"]'
+    );
+    if (toggle && pop && input) new EmojiPickerController(toggle, pop, input);
   }
 
   private attachFormListeners(): void {

@@ -1,8 +1,6 @@
 import type { ChatMessage } from './chat-api.js';
 import type { TeamSession } from './chat-session.js';
 
-const QUICK_EMOJIS = ['🏈', '🏆', '🔥', '👏', '😂', '🙌', '🍿', '🎉', '💪', '🎯'];
-
 export function buildChatLayout(container: HTMLElement): void {
   container.innerHTML = `
     <div class="chat-header">
@@ -12,13 +10,6 @@ export function buildChatLayout(container: HTMLElement): void {
     <ul data-ref="chat-messages" class="chat-messages" aria-live="polite"></ul>
     <div data-ref="chat-form-area" class="chat-form-area"></div>
   `;
-}
-
-function buildEmojiBar(): string {
-  const btns = QUICK_EMOJIS.map(
-    (e) => `<button type="button" class="emoji-btn" data-emoji="${e}">${e}</button>`
-  ).join('');
-  return `<div class="chat-emoji-bar" data-ref="chat-emoji-bar">${btns}</div>`;
 }
 
 function renderTeamArea(
@@ -32,11 +23,14 @@ function renderTeamArea(
   `;
   area.innerHTML = `
     <form data-ref="chat-form" class="chat-form">
-      ${buildEmojiBar()}
       <div class="chat-input-row">
-        <input data-ref="chat-input" class="chat-input" type="text" placeholder="Escribe como ${session.teamName}..." maxlength="280" required />
+        <div class="chat-input-wrapper">
+          <input data-ref="chat-input" class="chat-input" type="text" placeholder="Escribe como ${session.teamName}..." maxlength="280" required />
+          <button type="button" data-ref="emoji-toggle-btn" class="emoji-toggle-btn" aria-label="Abrir panel de emojis">😊</button>
+        </div>
         <button type="submit" class="chat-send-btn">Enviar</button>
       </div>
+      <div data-ref="emoji-popover" class="emoji-popover" style="display: none;"></div>
     </form>
   `;
 }

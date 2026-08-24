@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Chat UI E2E with Team Key Authentication', () => {
-  test('authenticates with team key and sends chat message with emoji', async ({
+  test('authenticates with team key, opens emoji popover and sends message', async ({
     page
   }) => {
     await page.goto('/');
@@ -19,15 +19,22 @@ test.describe('Chat UI E2E with Team Key Authentication', () => {
 
     await expect(page.locator('.badge-team')).toContainText('Madrid Steelers');
     const msgInput = page.locator('[data-ref="chat-input"]');
-    await msgInput.fill('¡Madrid Steelers listos! ');
-    await page.locator('[data-emoji="🔥"]').click();
+    await msgInput.fill('¡Madrid Steelers listos!');
+
+    const emojiToggle = page.locator('[data-ref="emoji-toggle-btn"]');
+    await expect(emojiToggle).toBeVisible();
+    await emojiToggle.click();
+    await expect(page.locator('[data-ref="emoji-popover"]')).toBeVisible();
+    await emojiToggle.click();
+    await expect(page.locator('[data-ref="emoji-popover"]')).toBeHidden();
+
     await page.locator('[data-ref="chat-form"] button[type="submit"]').click();
 
     await expect(page.locator('.chat-message-item').last()).toContainText(
       'Madrid Steelers'
     );
     await expect(page.locator('.chat-message-body').last()).toContainText(
-      '¡Madrid Steelers listos! 🔥'
+      '¡Madrid Steelers listos!'
     );
   });
 

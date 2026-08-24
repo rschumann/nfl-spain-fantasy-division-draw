@@ -66,7 +66,7 @@ describe('Chat Controller and UI Renderer', () => {
     expect(formArea.querySelector('[data-ref="chat-input"]')).not.toBeNull();
   });
 
-  it('handles emoji insertion, login rejection and full message flow', async () => {
+  it('handles emoji picker toggle, login rejection and full message flow', async () => {
     vi.spyOn(window, 'alert').mockImplementation(() => {});
     vi.spyOn(chatApi, 'fetchMessages').mockResolvedValue({
       messages: [],
@@ -97,8 +97,10 @@ describe('Chat Controller and UI Renderer', () => {
       loginForm.dispatchEvent(new Event('submit'));
     }
 
-    const emojiBtn = container.querySelector<HTMLButtonElement>('.emoji-btn');
-    emojiBtn?.click();
+    const emojiToggle = container.querySelector<HTMLButtonElement>(
+      '[data-ref="emoji-toggle-btn"]'
+    );
+    emojiToggle?.click();
     const msgInput = container.querySelector<HTMLInputElement>('[data-ref="chat-input"]');
     const msgForm = container.querySelector<HTMLFormElement>('[data-ref="chat-form"]');
     if (msgInput && msgForm) {
