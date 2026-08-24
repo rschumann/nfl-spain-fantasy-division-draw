@@ -14,7 +14,7 @@ export default [
     ]
   },
   {
-    files: ['**/*.ts', '**/*.js', '**/*.mjs', '**/*.cjs'],
+    files: ['src/**/*.ts', 'scripts/**/*.mjs', 'scripts/**/*.js'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -44,6 +44,37 @@ export default [
         }
       ],
       'no-console': ['warn', { allow: ['info', 'warn', 'error'] }],
+      'no-debugger': 'error',
+      'no-var': 'error',
+      'prefer-const': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+      ],
+      '@typescript-eslint/no-explicit-any': 'error'
+    }
+  },
+  {
+    files: ['tests/**/*.ts', '*.ts', '*.js'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin
+    },
+    rules: {
+      'max-lines': [
+        'error',
+        {
+          max: 179,
+          skipBlankLines: false,
+          skipComments: false
+        }
+      ],
       'no-debugger': 'error',
       'no-var': 'error',
       'prefer-const': 'error',

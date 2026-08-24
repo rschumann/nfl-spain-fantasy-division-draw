@@ -1,0 +1,18 @@
+[
+  { "id": "madrid-steelers", "name": "Madrid Steelers" },
+  { "id": "toledo-patriots", "name": "Toledo Patriots" },
+  { "id": "la-osera", "name": "La Osera" },
+  { "id": "london-viking", "name": "London Viking" },
+  { "id": "nico", "name": "Nico" },
+  { "id": "ohio-dolphins", "name": "Ohio Dolphins" },
+  { "id": "camioneros", "name": "Camioneros" },
+  { "id": "wolverines", "name": "Wolverines" },
+  { "id": "barakaldo", "name": "Barakaldo" },
+  { "id": "daniel", "name": "Daniel" },
+  { "id": "samuel", "name": "Samuel" },
+  { "id": "sant-boi-chargers", "name": "Sant Boi Chargers" },
+  { "id": "bcn-giants", "name": "BCN Giants" },
+  { "id": "juanito", "name": "Juanito" },
+  { "id": "navarra-colts", "name": "Navarra Colts" },
+  { "id": "xisko", "name": "Xisko" }
+]
