@@ -28,6 +28,14 @@ function verifyAdminAuth(
   return true;
 }
 
+function getKeysPath(env: string): string | undefined {
+  const isTest =
+    env === 'test' ||
+    process.env.NODE_ENV === 'test' ||
+    typeof process.env.VITEST !== 'undefined';
+  return isTest ? undefined : resolve(process.cwd(), 'config/team-keys.json');
+}
+
 function buildConfigSummary(config: AppConfig) {
   return {
     leagueName: config.leagueName,
@@ -44,16 +52,43 @@ function buildConfigSummary(config: AppConfig) {
   };
 }
 
-function registerActionsEndpoints(app: FastifyInstance, opts: AdminRoutesOptions): void {
+function registerKeyGenerators(app: FastifyInstance, opts: AdminRoutesOptions): void {
+  app.post('/api/admin/keys/generate-missing', async (req, reply) => {
+    reply.header('Cache-Control', 'no-store');
+    if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+    const keys = opts.registry.generateMissingKeys(
+      opts.config.baseUrl,
+      getKeysPath(opts.config.env)
+    );
+    return { success: true, count: keys.length, keys };
+  });
+
+  app.post<{ Body: { teamId?: string } }>(
+    '/api/admin/keys/regenerate-team',
+    async (req, reply) => {
+      reply.header('Cache-Control', 'no-store');
+      if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+      const { teamId } = req.body || {};
+      if (!teamId) return reply.status(400).send({ error: 'teamId requerido' });
+      const keys = opts.registry.generateKeyForTeam(
+        teamId,
+        opts.config.baseUrl,
+        getKeysPath(opts.config.env)
+      );
+      return { success: true, keys };
+    }
+  );
+}
+
+function registerOtherActions(app: FastifyInstance, opts: AdminRoutesOptions): void {
   app.post('/api/admin/keys/generate', async (req, reply) => {
     reply.header('Cache-Control', 'no-store');
     if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
-    const isTest =
-      opts.config.env === 'test' ||
-      process.env.NODE_ENV === 'test' ||
-      typeof process.env.VITEST !== 'undefined';
-    const path = isTest ? undefined : resolve(process.cwd(), 'config/team-keys.json');
-    const keys = opts.registry.generateAndSaveKeys(opts.config.baseUrl, path, true);
+    const keys = opts.registry.generateAndSaveKeys(
+      opts.config.baseUrl,
+      getKeysPath(opts.config.env),
+      true
+    );
     return { success: true, count: keys.length, keys };
   });
 
@@ -77,6 +112,7 @@ export function createAdminRoutes(opts: AdminRoutesOptions): FastifyPluginAsync 
         teams: opts.registry.getTeams()
       };
     });
-    registerActionsEndpoints(app, opts);
+    registerKeyGenerators(app, opts);
+    registerOtherActions(app, opts);
   };
 }

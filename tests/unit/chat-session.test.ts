@@ -13,7 +13,8 @@ describe('Chat Session Management', () => {
     window.history.replaceState({}, '', '/');
   });
 
-  it('extracts key from url search params', () => {
+  it('extracts key from url search params or returns null', () => {
+    expect(getUrlKey()).toBeNull();
     window.history.replaceState({}, '', '/?key=steelers-7821');
     expect(getUrlKey()).toBe('steelers-7821');
 
@@ -29,10 +30,22 @@ describe('Chat Session Management', () => {
     expect(getStoredSession()).toBeNull();
   });
 
-  it('handles localStorage errors gracefully', () => {
+  it('handles localStorage errors gracefully on save and clear', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('Access denied');
     });
     expect(getStoredSession()).toBeNull();
+
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Access denied');
+    });
+    expect(() =>
+      saveStoredSession({ key: 'k1', teamId: 't1', teamName: 'Team One' })
+    ).not.toThrow();
+
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('Access denied');
+    });
+    expect(() => clearStoredSession()).not.toThrow();
   });
 });

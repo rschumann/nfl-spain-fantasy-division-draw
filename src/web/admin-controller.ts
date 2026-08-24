@@ -1,66 +1,9 @@
-interface AdminKeyItem {
-  teamId: string;
-  teamName: string;
-  key: string;
-  url: string;
-  isPending?: boolean;
-  logoUrl?: string;
-}
-
-interface AdminDashboardData {
-  config: Record<string, unknown>;
-  keys: AdminKeyItem[];
-  teams: Array<{ id: string; name: string; logoUrl?: string }>;
-}
-
-function renderVarsHtml(cfg: Record<string, unknown>): string {
-  return Object.entries(cfg)
-    .filter(([k]) => typeof cfg[k] !== 'object')
-    .map(
-      ([k, v]) => `
-      <div class="admin-var-item">
-        <span class="admin-var-label">${k}</span>
-        <span class="admin-var-val">${String(v)}</span>
-      </div>`
-    )
-    .join('');
-}
-
-function renderRow(k: AdminKeyItem): string {
-  const badge = k.isPending
-    ? '<span style="color:#d29922;font-size:0.75rem;">(Invitación Pendiente)</span>'
-    : '<span style="color:#3fb950;font-size:0.75rem;">(Activo)</span>';
-  return `
-    <tr>
-      <td><strong>${k.teamName}</strong> ${badge}</td>
-      <td><code>${k.key}</code></td>
-      <td>
-        <button type="button" class="admin-btn" data-copy="${k.url}">Copiar</button>
-      </td>
-    </tr>`;
-}
-
-function buildSectionsHtml(data: AdminDashboardData): string {
-  return `
-    <section class="admin-section">
-      <h3 class="admin-section-title">⚙️ Variables de Configuración</h3>
-      <div class="admin-vars-grid">${renderVarsHtml(data.config)}</div>
-    </section>
-    <section class="admin-section">
-      <h3 class="admin-section-title">🔑 Enlaces y Claves de Equipos</h3>
-      <div class="admin-actions-bar">
-        <button type="button" class="admin-btn admin-btn-primary" data-ref="admin-gen-keys">🔄 Generar Claves</button>
-        <button type="button" class="admin-btn" data-ref="admin-sync-espn">⚡ Sincronizar ESPN</button>
-        <button type="button" class="admin-btn" data-ref="admin-copy-all">📋 Copiar Todos</button>
-      </div>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>Equipo</th><th>Clave</th><th>Acción</th></tr></thead>
-          <tbody data-ref="admin-tbody">${data.keys.map(renderRow).join('')}</tbody>
-        </table>
-      </div>
-    </section>`;
-}
+import {
+  type AdminKeyItem,
+  type AdminDashboardData,
+  buildSectionsHtml,
+  renderRow
+} from './admin-view.js';
 
 export class AdminController {
   private overlay: HTMLElement | null = null;
@@ -68,26 +11,17 @@ export class AdminController {
 
   constructor(private readonly adminKey: string) {}
 
-  async init(headerEl: HTMLElement): Promise<void> {
+  async initDirect(): Promise<void> {
     try {
       const res = await fetch(
         `/api/admin/dashboard?adminKey=${encodeURIComponent(this.adminKey)}`
       );
       if (!res.ok) return;
       this.data = (await res.json()) as AdminDashboardData;
-      this.renderAdminButton(headerEl);
+      this.openModal();
     } catch {
       // Admin auth failed
     }
-  }
-
-  private renderAdminButton(header: HTMLElement): void {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'admin-badge-btn';
-    btn.textContent = '👑 Panel Admin';
-    btn.onclick = () => this.openModal();
-    header.appendChild(btn);
   }
 
   private openModal(): void {
@@ -123,38 +57,72 @@ export class AdminController {
       .querySelector('[data-ref="admin-copy-all"]')
       ?.addEventListener('click', () => this.copyAllLinks());
     this.overlay
-      .querySelector('[data-ref="admin-gen-keys"]')
-      ?.addEventListener('click', () => void this.generateKeys());
+      .querySelector('[data-ref="admin-gen-missing"]')
+      ?.addEventListener('click', () => void this.generateMissing());
     this.overlay
       .querySelector('[data-ref="admin-sync-espn"]')
       ?.addEventListener('click', () => void this.syncEspn());
     this.overlay.querySelectorAll<HTMLButtonElement>('button[data-copy]').forEach((b) => {
       b.onclick = () => void navigator.clipboard.writeText(b.dataset.copy || '');
     });
+    this.overlay
+      .querySelectorAll<HTMLButtonElement>('button[data-regen]')
+      .forEach((b) => {
+        b.onclick = () => void this.regenerateSingleTeam(b.dataset.regen || '');
+      });
   }
 
-  private async generateKeys(): Promise<void> {
-    if (!confirm('¿Regenerar claves para los equipos?')) return;
-    const url = `/api/admin/keys/generate?adminKey=${encodeURIComponent(this.adminKey)}`;
+  private async generateMissing(): Promise<void> {
+    const url = `/api/admin/keys/generate-missing?adminKey=${encodeURIComponent(this.adminKey)}`;
     const res = await fetch(url, { method: 'POST' });
     if (!res.ok) return;
     const json = (await res.json()) as { keys: AdminKeyItem[] };
     if (this.data) this.data.keys = json.keys;
+    this.updateTable(json.keys);
+    alert('Claves generadas para equipos activos sin token.');
+  }
+
+  private async regenerateSingleTeam(teamId: string): Promise<void> {
+    if (!confirm(`¿Regenerar clave solo para este equipo?`)) return;
+    const url = `/api/admin/keys/regenerate-team?adminKey=${encodeURIComponent(this.adminKey)}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teamId })
+    });
+    if (!res.ok) return;
+    const json = (await res.json()) as { keys: AdminKeyItem[] };
+    if (this.data) this.data.keys = json.keys;
+    this.updateTable(json.keys);
+  }
+
+  private updateTable(keys: AdminKeyItem[]): void {
     const tbody = this.overlay?.querySelector('[data-ref="admin-tbody"]');
-    if (tbody) tbody.innerHTML = json.keys.map(renderRow).join('');
+    if (tbody) tbody.innerHTML = keys.map(renderRow).join('');
+    this.attachModalEvents();
   }
 
   private async syncEspn(): Promise<void> {
     await fetch(`/api/admin/espn/sync?adminKey=${encodeURIComponent(this.adminKey)}`, {
       method: 'POST'
     });
+    const res = await fetch(
+      `/api/admin/dashboard?adminKey=${encodeURIComponent(this.adminKey)}`
+    );
+    if (res.ok) {
+      this.data = (await res.json()) as AdminDashboardData;
+      this.updateTable(this.data.keys);
+    }
     alert('Sincronización con ESPN completada.');
   }
 
   private copyAllLinks(): void {
     if (!this.data) return;
-    const text = this.data.keys.map((k) => `${k.teamName}: ${k.url}`).join('\n');
+    const active = this.data.keys.filter(
+      (k) => !k.isPending && k.key !== 'pendiente-invitacion'
+    );
+    const text = active.map((k) => `${k.teamName}: ${k.url}`).join('\n');
     void navigator.clipboard.writeText(text);
-    alert('Todos los enlaces han sido copiados al portapapeles.');
+    alert('Enlaces de todos los equipos activos copiados al portapapeles.');
   }
 }

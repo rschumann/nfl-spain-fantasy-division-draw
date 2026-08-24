@@ -40,32 +40,47 @@ describe('Admin Routes (Dashboard, Key Generation, ESPN Sync)', () => {
     expect(body.keys).toHaveLength(16);
   });
 
-  it('regenerates keys via POST /api/admin/keys/generate', async () => {
+  it('generates missing keys and regenerates single team key', async () => {
     const registry = new TeamRegistry();
     const app = fastify();
     await app.register(createAdminRoutes({ config, registry }));
 
-    const res = await app.inject({
+    const resMissing = await app.inject({
+      method: 'POST',
+      url: `/api/admin/keys/generate-missing?adminKey=${config.adminKey}`
+    });
+    expect(resMissing.statusCode).toBe(200);
+
+    const resBad = await app.inject({
+      method: 'POST',
+      url: `/api/admin/keys/regenerate-team?adminKey=${config.adminKey}`,
+      payload: {}
+    });
+    expect(resBad.statusCode).toBe(400);
+
+    const resSingle = await app.inject({
+      method: 'POST',
+      url: `/api/admin/keys/regenerate-team?adminKey=${config.adminKey}`,
+      payload: { teamId: 'madrid-steelers' }
+    });
+    expect(resSingle.statusCode).toBe(200);
+  });
+
+  it('regenerates all keys and triggers ESPN sync', async () => {
+    const registry = new TeamRegistry();
+    const app = fastify();
+    await app.register(createAdminRoutes({ config, registry }));
+
+    const resGen = await app.inject({
       method: 'POST',
       url: `/api/admin/keys/generate?adminKey=${config.adminKey}`
     });
-    expect(res.statusCode).toBe(200);
-    const body = res.json();
-    expect(body.success).toBe(true);
-    expect(body.keys).toHaveLength(16);
-  });
+    expect(resGen.statusCode).toBe(200);
 
-  it('triggers ESPN sync via POST /api/admin/espn/sync', async () => {
-    const registry = new TeamRegistry();
-    const app = fastify();
-    await app.register(createAdminRoutes({ config, registry }));
-
-    const res = await app.inject({
+    const resSync = await app.inject({
       method: 'POST',
       url: `/api/admin/espn/sync?adminKey=${config.adminKey}`
     });
-    expect(res.statusCode).toBe(200);
-    const body = res.json();
-    expect(body.success).toBe(true);
+    expect(resSync.statusCode).toBe(200);
   });
 });

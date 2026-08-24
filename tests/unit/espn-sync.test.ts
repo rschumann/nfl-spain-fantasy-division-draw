@@ -55,13 +55,40 @@ describe('ESPN Fantasy Live Sync & Team Registry', () => {
     fetchSpy.mockRestore();
   });
 
-  it('updates TeamRegistry and handles activeOnly key generation', async () => {
-    const registry = new TeamRegistry();
-    const keys = registry.generateAndSaveKeys('http://127.0.0.1:3000', undefined, false);
-    expect(keys).toHaveLength(16);
+  it('updates TeamRegistry and handles activeOnly and pending key generation', async () => {
+    const mockClient = {
+      fetchTeams: async () => {
+        throw new Error('Sync fail');
+      }
+    } as unknown as EspnFantasyClient;
+
+    const registry = new TeamRegistry(mockClient);
+    await registry.syncWithEspn('763332624', '2026');
+
+    const keysActiveOnly = registry.generateAndSaveKeys(
+      'http://127.0.0.1:3000',
+      undefined,
+      true
+    );
+    expect(keysActiveOnly).toHaveLength(16);
+
+    const keysAll = registry.generateAndSaveKeys(
+      'http://127.0.0.1:3000',
+      undefined,
+      false
+    );
+    expect(keysAll).toHaveLength(16);
+
+    const missing = registry.generateMissingKeys('http://127.0.0.1:3000');
+    expect(missing).toHaveLength(16);
+
+    const nonExistent = registry.generateKeyForTeam('non-existent');
+    expect(nonExistent).toHaveLength(16);
 
     const authNull = registry.findTeamByKey('pendiente-invitacion');
     expect(authNull).toBeNull();
+
+    expect(registry.findTeamByKey('   ')).toBeNull();
 
     registry.startPeriodicSync(100000);
     registry.stop();

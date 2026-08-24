@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AdminController } from '../../src/web/admin-controller.js';
 
-describe('AdminController UI (Task 06 / Admin Panel)', () => {
+describe('AdminController UI (Direct Admin Modal & Key Actions)', () => {
   const mockData = {
     config: { leagueName: 'NFL Spain', seasonLabel: '26-27' },
     keys: [
@@ -38,26 +38,14 @@ describe('AdminController UI (Task 06 / Admin Panel)', () => {
     });
   });
 
-  it('handles failed auth initialization', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({ ok: false } as Response);
-    const header = document.createElement('header');
-    const controller = new AdminController('invalid-key');
-    await controller.init(header);
-    expect(header.querySelector('.admin-badge-btn')).toBeNull();
-  });
-
-  it('initializes button and opens/closes modal', async () => {
+  it('directly opens modal on initDirect and handles close', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: true,
       json: async () => mockData
     } as unknown as Response);
 
-    const header = document.createElement('header');
     const controller = new AdminController('admin-secret-key-998877');
-    await controller.init(header);
-
-    const btn = header.querySelector<HTMLButtonElement>('.admin-badge-btn');
-    btn?.click();
+    await controller.initDirect();
 
     expect(document.querySelector('.admin-modal')).not.toBeNull();
     const closeBtn = document.querySelector<HTMLButtonElement>(
@@ -67,30 +55,71 @@ describe('AdminController UI (Task 06 / Admin Panel)', () => {
     expect(document.querySelector('.admin-modal')).toBeNull();
   });
 
-  it('handles copy-all, copy single, key generation and espn sync actions', async () => {
+  it('handles network failure on initDirect', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+    const controller = new AdminController('wrong-key');
+    await controller.initDirect();
+    expect(document.querySelector('.admin-modal')).toBeNull();
+  });
+
+  it('handles cancelled confirmation and errors on actions', async () => {
+    vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce({ ok: true, json: async () => mockData } as Response)
+      .mockResolvedValueOnce({ ok: false } as Response)
+      .mockResolvedValueOnce({ ok: false } as Response);
+
+    const controller = new AdminController('admin-secret-key-998877');
+    await controller.initDirect();
+
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => false)
+    );
+    const regenBtn = document.querySelector<HTMLButtonElement>('button[data-regen]');
+    regenBtn?.click();
+
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true)
+    );
+    regenBtn?.click();
+
+    const genMissingBtn = document.querySelector<HTMLButtonElement>(
+      '[data-ref="admin-gen-missing"]'
+    );
+    genMissingBtn?.click();
+  });
+
+  it('handles copy-all, copy single, generate missing, single regen and espn sync', async () => {
     vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce({ ok: true, json: async () => mockData } as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ keys: mockData.keys })
       } as Response)
-      .mockResolvedValueOnce({ ok: true } as Response);
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ keys: mockData.keys })
+      } as Response)
+      .mockResolvedValueOnce({ ok: true } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => mockData } as Response);
 
-    const header = document.createElement('header');
     const controller = new AdminController('admin-secret-key-998877');
-    await controller.init(header);
-
-    header.querySelector<HTMLButtonElement>('.admin-badge-btn')?.click();
+    await controller.initDirect();
 
     document.querySelector<HTMLButtonElement>('[data-ref="admin-copy-all"]')?.click();
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
 
     document.querySelector<HTMLButtonElement>('button[data-copy]')?.click();
 
-    const genBtn = document.querySelector<HTMLButtonElement>(
-      '[data-ref="admin-gen-keys"]'
+    const genMissingBtn = document.querySelector<HTMLButtonElement>(
+      '[data-ref="admin-gen-missing"]'
     );
-    genBtn?.click();
+    genMissingBtn?.click();
+
+    const regenSingleBtn =
+      document.querySelector<HTMLButtonElement>('button[data-regen]');
+    regenSingleBtn?.click();
 
     const syncBtn = document.querySelector<HTMLButtonElement>(
       '[data-ref="admin-sync-espn"]'
