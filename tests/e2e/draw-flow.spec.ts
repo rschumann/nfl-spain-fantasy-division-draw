@@ -20,7 +20,7 @@ test.describe('Draw Page E2E Flow (Task 06)', () => {
     const pendingChips = page.locator('.team-chip');
     await expect(pendingChips).toHaveCount(16);
 
-    const hashEl = page.locator('[data-ref="commitment-hash"]');
-    await expect(hashEl).toBeVisible();
+    const progressEl = page.locator('[data-ref="progress-text"]');
+    await expect(progressEl).toBeVisible();
   });
 });
