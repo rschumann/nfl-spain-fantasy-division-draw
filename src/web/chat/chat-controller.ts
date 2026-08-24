@@ -43,10 +43,16 @@ export class ChatController {
       if (res.valid && res.teamId && res.teamName) {
         this.session = { key: urlKey, teamId: res.teamId, teamName: res.teamName };
         saveStoredSession(this.session);
+        globalPresence.setMyTeam({ teamId: res.teamId, teamName: res.teamName });
         return;
       }
     }
     this.session = getStoredSession();
+    globalPresence.setMyTeam(
+      this.session
+        ? { teamId: this.session.teamId, teamName: this.session.teamName }
+        : null
+    );
   }
 
   private renderSession(onlineCount = 0): void {
@@ -75,7 +81,9 @@ export class ChatController {
       logoutBtn.onclick = () => {
         clearStoredSession();
         this.session = null;
+        globalPresence.setMyTeam(null);
         this.renderSession();
+        this.syncMessages();
       };
     }
     const loginForm = this.container.querySelector<HTMLFormElement>(
@@ -98,6 +106,7 @@ export class ChatController {
       if (res.valid && res.teamId && res.teamName) {
         this.session = { key, teamId: res.teamId, teamName: res.teamName };
         saveStoredSession(this.session);
+        globalPresence.setMyTeam({ teamId: res.teamId, teamName: res.teamName });
         this.renderSession();
         await this.syncMessages();
       } else {
@@ -138,7 +147,7 @@ export class ChatController {
     if (!this.messagesListEl) return;
     const { messages, onlineTeamIds } = await fetchMessages(this.session?.key);
     globalPresence.setOnline(onlineTeamIds);
-    renderMessages(this.messagesListEl, messages, onlineTeamIds);
+    renderMessages(this.messagesListEl, messages, onlineTeamIds, this.session?.teamId);
     this.updateOnlineStatus(onlineTeamIds);
     if (!this.session && this.badgeEl) {
       const spectatorEl = this.badgeEl.querySelector('.badge-spectator');

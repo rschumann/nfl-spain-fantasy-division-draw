@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Chat UI E2E with Team Key Authentication', () => {
-  test('authenticates with team key, opens emoji popover and sends message', async ({
+  test('authenticates with team key, opens emoji popover and personalizes page', async ({
     page
   }) => {
     await page.goto('/');
@@ -18,6 +18,11 @@ test.describe('Chat UI E2E with Team Key Authentication', () => {
     await page.locator('[data-ref="chat-login-form"] button[type="submit"]').click();
 
     await expect(page.locator('.badge-team')).toContainText('Madrid Steelers');
+    await expect(page.locator('[data-ref="my-team-badge"]')).toContainText(
+      'Madrid Steelers'
+    );
+    await expect(page.locator('.team-chip.is-my-team')).toContainText('Madrid Steelers');
+
     const msgInput = page.locator('[data-ref="chat-input"]');
     await msgInput.fill('¡Madrid Steelers listos!');
 
@@ -38,9 +43,12 @@ test.describe('Chat UI E2E with Team Key Authentication', () => {
     );
   });
 
-  test('auto-authenticates via URL parameter', async ({ page }) => {
+  test('auto-authenticates and personalizes via URL parameter', async ({ page }) => {
     await page.goto('/?key=patriots-4912');
     await expect(page.locator('.badge-team')).toContainText('Toledo Patriots');
+    await expect(page.locator('[data-ref="my-team-badge"]')).toContainText(
+      'Toledo Patriots'
+    );
   });
 
   test('mobile opens bottom sheet and displays chat', async ({ page }) => {

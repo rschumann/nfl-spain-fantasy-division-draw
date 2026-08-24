@@ -17,7 +17,7 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     status: 'scheduled',
     serverNow: '2026-08-24T12:00:00.000Z',
     startAt: '2026-08-24T12:00:00.000Z',
-    revealIntervalSeconds: 120,
+    revealIntervalSeconds: 60,
     teamCount: 16,
     divisionCapacity: 4,
     revealedCount: 0,
@@ -34,22 +34,24 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
             teamId: 'madrid-steelers',
             teamName: 'Madrid Steelers',
             divisionId: 'NORTH',
-            revealAt: '2026-08-24T12:02:00.000Z'
+            revealAt: '2026-08-24T12:01:00.000Z'
           }
         ]
       }
     ],
     lastAssignment: null,
-    nextRevealAt: '2026-08-24T12:02:00.000Z',
+    nextRevealAt: '2026-08-24T12:01:00.000Z',
     verification: null
   };
 
   beforeEach(() => {
     document.body.innerHTML = `
       <div id="app">
-        <h1 data-ref="brand-title"></h1>
-        <p data-ref="brand-subtitle">Sorteo de divisiones · Temporada 26-27</p>
-        <span data-ref="status-badge"></span>
+        <header class="app-header">
+          <h1 data-ref="brand-title"></h1>
+          <p data-ref="brand-subtitle"></p>
+          <span data-ref="status-badge"></span>
+        </header>
         <div data-ref="timer-hero">
           <p data-ref="timer-label"></p>
           <div data-ref="timer-digits"></div>
@@ -69,40 +71,37 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     `;
   });
 
-  it('renders header for scheduled, running and completed states', () => {
+  it('renders header with personal team badge for authenticated team', () => {
     const container = document.getElementById('app')!;
-    const vm1 = createDrawViewModel(sampleDto, 120);
-    renderHeader(container, vm1);
-    expect(container.querySelector('[data-ref="timer-digits"]')?.textContent).toBe(
-      '02:00'
+    const vm1 = createDrawViewModel(sampleDto, 60);
+    renderHeader(container, vm1, {
+      teamId: 'madrid-steelers',
+      teamName: 'Madrid Steelers'
+    });
+    expect(container.querySelector('[data-ref="my-team-badge"]')?.textContent).toContain(
+      'Madrid Steelers'
     );
-
-    const runningDto = {
-      ...sampleDto,
-      status: 'running' as const,
-      lastAssignment: sampleDto.divisions[0]!.assignments[0]!
-    };
-    const vm2 = createDrawViewModel(runningDto, 60);
-    renderHeader(container, vm2);
-    expect(
-      container.querySelector('[data-ref="spotlight-assignment"]')?.textContent
-    ).toContain('Madrid Steelers');
-
-    const completeDto = { ...sampleDto, status: 'complete' as const };
-    const vm3 = createDrawViewModel(completeDto, 0);
-    renderHeader(container, vm3);
-    expect(container.querySelector('[data-ref="timer-digits"]')?.textContent).toBe(
-      '16 / 16'
-    );
+    renderHeader(container, vm1, null);
+    expect(container.querySelector('[data-ref="my-team-badge"]')).toBeNull();
   });
 
-  it('renders division slots and pending teams with online indicators', () => {
+  it('renders division slots and pending teams with myTeam highlights', () => {
     const container = document.getElementById('app')!;
-    const vm = createDrawViewModel(sampleDto, 120);
-    renderDivisions(container, vm.divisions, ['madrid-steelers']);
-    renderPendingTeams(container, vm.pendingTeams, vm.progressText, ['madrid-steelers']);
-    expect(container.querySelector('.slot-item.is-online')).not.toBeNull();
-    expect(container.querySelector('.team-chip.is-online')).not.toBeNull();
+    const vm = createDrawViewModel(sampleDto, 60);
+    renderDivisions(container, vm.divisions, ['madrid-steelers'], 'madrid-steelers');
+    renderPendingTeams(
+      container,
+      vm.pendingTeams,
+      vm.progressText,
+      ['madrid-steelers'],
+      'madrid-steelers'
+    );
+    expect(container.querySelector('.slot-item.is-my-team')).not.toBeNull();
+    expect(container.querySelector('.team-chip.is-my-team')).not.toBeNull();
+    expect(container.querySelector('.team-chip .my-team-tag')?.textContent).toBe('Tú');
+    expect(container.querySelector('.slot-item .my-team-tag')?.textContent).toBe(
+      'Tu equipo'
+    );
 
     renderPendingTeams(container, [], '16 de 16 equipos sorteados');
     expect(container.querySelector('.team-chip')?.textContent).toContain(

@@ -42,7 +42,7 @@ export default defineConfig({
       SEASON_LABEL: '26-27',
       DRAW_TIMEZONE: 'Europe/Madrid',
       DRAW_START_AT: '2099-01-01T12:00:00.000Z',
-      DRAW_REVEAL_INTERVAL_SECONDS: '120',
+      DRAW_REVEAL_INTERVAL_SECONDS: '60',
       DRAW_RESET_ON_START: 'true',
       DRAW_STATE_PATH: '.data/e2e-draw-state.json'
     }

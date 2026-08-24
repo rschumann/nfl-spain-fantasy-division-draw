@@ -57,16 +57,24 @@ export function renderSessionArea(
   `;
 }
 
-function buildMessageItem(msg: ChatMessage, isOnline: boolean): HTMLElement {
+function formatSender(name: string, isOnline: boolean, isMine: boolean): string {
+  const dot = isOnline ? ' <span class="online-dot"></span>' : '';
+  const tag = isMine ? ' <span class="my-team-tag">Tú</span>' : '';
+  return `${name}${tag}${dot}`;
+}
+
+function buildMessageItem(
+  msg: ChatMessage,
+  isOnline: boolean,
+  isMine: boolean
+): HTMLElement {
   const li = document.createElement('li');
-  li.className = 'chat-message-item';
+  li.className = isMine ? 'chat-message-item is-my-message' : 'chat-message-item';
   const header = document.createElement('div');
   header.className = 'chat-message-header';
   const sender = document.createElement('span');
   sender.className = 'chat-sender-team';
-  sender.innerHTML = isOnline
-    ? `${msg.teamName} <span class="online-dot"></span>`
-    : msg.teamName;
+  sender.innerHTML = formatSender(msg.teamName, isOnline, isMine);
   const time = document.createElement('span');
   time.textContent = new Date(msg.createdAt).toLocaleTimeString([], {
     hour: '2-digit',
@@ -85,7 +93,8 @@ function buildMessageItem(msg: ChatMessage, isOnline: boolean): HTMLElement {
 export function renderMessages(
   listEl: HTMLElement,
   messages: readonly ChatMessage[],
-  onlineTeamIds: readonly string[] = []
+  onlineTeamIds: readonly string[] = [],
+  myTeamId: string | null = null
 ): void {
   listEl.replaceChildren();
   if (messages.length === 0) {
@@ -96,7 +105,8 @@ export function renderMessages(
     return;
   }
   for (const msg of messages) {
-    listEl.appendChild(buildMessageItem(msg, onlineTeamIds.includes(msg.teamId)));
+    const isMine = msg.teamId === myTeamId;
+    listEl.appendChild(buildMessageItem(msg, onlineTeamIds.includes(msg.teamId), isMine));
   }
   listEl.scrollTop = listEl.scrollHeight;
 }

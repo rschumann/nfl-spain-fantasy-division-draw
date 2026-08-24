@@ -1,6 +1,26 @@
 import type { DrawViewModel } from './view-model.js';
+import type { UserTeamIdentity } from './presence.js';
 
-export function renderHeader(container: HTMLElement, vm: DrawViewModel): void {
+function renderMyTeamBadge(headerEl: HTMLElement, myTeam: UserTeamIdentity | null): void {
+  let badge = headerEl.querySelector<HTMLElement>('[data-ref="my-team-badge"]');
+  if (myTeam) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'my-team-badge';
+      badge.setAttribute('data-ref', 'my-team-badge');
+      headerEl.appendChild(badge);
+    }
+    badge.innerHTML = `🏈 Tu franquicia: <strong>${myTeam.teamName}</strong>`;
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+export function renderHeader(
+  container: HTMLElement,
+  vm: DrawViewModel,
+  myTeam: UserTeamIdentity | null = null
+): void {
   const brandTitle = container.querySelector('[data-ref="brand-title"]');
   if (brandTitle) brandTitle.textContent = vm.leagueName;
 
@@ -15,6 +35,9 @@ export function renderHeader(container: HTMLElement, vm: DrawViewModel): void {
     statusBadge.className = `status-badge ${vm.statusBadgeClass}`;
   }
 
+  const appHeader = container.querySelector<HTMLElement>('.app-header');
+  if (appHeader) renderMyTeamBadge(appHeader, myTeam);
+
   renderTimerHero(container, vm);
 }
 
@@ -23,8 +46,9 @@ function renderTimerHero(container: HTMLElement, vm: DrawViewModel): void {
   if (!timerHero) return;
 
   const timerLabel = timerHero.querySelector('[data-ref="timer-label"]');
-  if (timerLabel)
+  if (timerLabel) {
     timerLabel.textContent = vm.showTimer ? vm.timerLabel : 'Sorteo finalizado';
+  }
 
   const timerDigits = timerHero.querySelector<HTMLElement>('[data-ref="timer-digits"]');
   if (timerDigits) {

@@ -30,10 +30,17 @@ export class DrawSyncController {
     const remaining = computeSecondsRemaining(target, this.offsetMs);
     const vm = createDrawViewModel(dto, remaining, this.isReconnecting);
     const online = globalPresence.getOnline();
+    const myTeam = globalPresence.getMyTeam();
 
-    renderHeader(this.container, vm);
-    renderDivisions(this.container, vm.divisions, online);
-    renderPendingTeams(this.container, vm.pendingTeams, vm.progressText, online);
+    renderHeader(this.container, vm, myTeam);
+    renderDivisions(this.container, vm.divisions, online, myTeam?.teamId);
+    renderPendingTeams(
+      this.container,
+      vm.pendingTeams,
+      vm.progressText,
+      online,
+      myTeam?.teamId
+    );
     renderVerification(this.container, vm, dto);
   }
 

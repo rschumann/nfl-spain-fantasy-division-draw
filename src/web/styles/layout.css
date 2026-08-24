@@ -35,6 +35,8 @@ body {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+  gap: var(--space-sm);
 }
 
 .brand-title {
@@ -46,6 +48,17 @@ body {
 .brand-subtitle {
   font-size: 0.875rem;
   color: var(--color-text-muted);
+}
+
+.my-team-badge {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(245, 158, 11, 0.1));
+  border: 1px solid #eab308;
+  color: #fef08a;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.25);
 }
 
 .status-badge {

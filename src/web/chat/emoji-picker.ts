@@ -1,4 +1,5 @@
 import 'emoji-picker-element';
+import emojiDataSourceUrl from 'emojibase-data/en/data.json?url';
 
 export class EmojiPickerController {
   private isOpen = false;
@@ -37,8 +38,11 @@ export class EmojiPickerController {
 
   private ensurePickerMounted(): void {
     if (this.pickerElement) return;
-    const picker = document.createElement('emoji-picker');
+    const picker = document.createElement('emoji-picker') as HTMLElement & {
+      dataSource?: string;
+    };
     picker.className = 'dark';
+    picker.dataSource = emojiDataSourceUrl;
     picker.addEventListener('emoji-click', (event: Event) => {
       const customEvent = event as CustomEvent<{ unicode: string }>;
       if (customEvent.detail?.unicode) {
