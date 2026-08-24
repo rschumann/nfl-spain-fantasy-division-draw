@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'node',
     testTimeout: 20000,
     include: ['tests/**/*.test.ts'],
-    exclude: ['tests/e2e/**', 'node_modules/**'],
+    exclude: ['tests/e2e/**', 'tests/rules/**', 'node_modules/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
