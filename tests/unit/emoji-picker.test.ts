@@ -43,18 +43,33 @@ describe('Emoji Picker Controller', () => {
     expect(popover.style.display).toBe('none');
   });
 
-  it('inserts emoji at cursor position and updates value', () => {
+  it('filters emojis via search input in real-time', () => {
     const controller = new EmojiPickerController(toggleBtn, popover, input);
     controller.open();
-    const picker = popover.querySelector('emoji-picker');
-    expect(picker).not.toBeNull();
+    const searchInput = popover.querySelector<HTMLInputElement>('.emoji-search-input');
+    expect(searchInput).not.toBeNull();
 
-    picker?.dispatchEvent(
-      new CustomEvent('emoji-click', {
-        detail: { unicode: '🏈' }
-      })
-    );
-    expect(input.value).toBe('Hello 🏈');
+    searchInput!.value = 'futbol';
+    searchInput!.dispatchEvent(new Event('input'));
+    const buttons = popover.querySelectorAll('.emoji-btn');
+    expect(buttons.length).toBeGreaterThan(0);
+    expect(Array.from(buttons).some((b) => b.textContent === '🏈')).toBe(true);
+
+    searchInput!.value = 'nonexistentqueryxyz';
+    searchInput!.dispatchEvent(new Event('input'));
+    expect(popover.querySelector('.emoji-no-results')).not.toBeNull();
+  });
+
+  it('inserts emoji on click at cursor position and updates value', () => {
+    const controller = new EmojiPickerController(toggleBtn, popover, input);
+    controller.open();
+    const footballBtn = Array.from(
+      popover.querySelectorAll<HTMLButtonElement>('.emoji-btn')
+    ).find((b) => b.textContent === '😀');
+    expect(footballBtn).toBeDefined();
+
+    footballBtn!.click();
+    expect(input.value).toBe('Hello 😀');
     controller.close();
   });
 });

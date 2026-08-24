@@ -1,14 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Chat UI E2E with Team Key Authentication', () => {
-  test('authenticates with team key, opens emoji popover and personalizes page', async ({
+  test('authenticates with team key, searches and adds emoji, and sends message', async ({
     page
   }) => {
     await page.goto('/');
     const width = page.viewportSize()?.width ?? 1440;
-    if (width < 1024) {
-      await page.locator('#chat-toggle-btn').click();
-    }
+    if (width < 1024) await page.locator('#chat-toggle-btn').click();
 
     await expect(page.locator('.chat-title')).toHaveText('Chat de la liga');
     await expect(page.locator('.badge-spectator')).toBeVisible();
@@ -24,22 +22,26 @@ test.describe('Chat UI E2E with Team Key Authentication', () => {
     await expect(page.locator('.team-chip.is-my-team')).toContainText('Madrid Steelers');
 
     const msgInput = page.locator('[data-ref="chat-input"]');
-    await msgInput.fill('¡Madrid Steelers listos!');
+    await msgInput.fill('¡Madrid Steelers listos ');
 
     const emojiToggle = page.locator('[data-ref="emoji-toggle-btn"]');
-    await expect(emojiToggle).toBeVisible();
     await emojiToggle.click();
     await expect(page.locator('[data-ref="emoji-popover"]')).toBeVisible();
-    await emojiToggle.click();
-    await expect(page.locator('[data-ref="emoji-popover"]')).toBeHidden();
 
+    const searchInput = page.locator('.emoji-search-input');
+    await searchInput.fill('fuego');
+    const fireBtn = page.locator('.emoji-btn', { hasText: '🔥' });
+    await expect(fireBtn).toBeVisible();
+    await fireBtn.click();
+
+    await expect(msgInput).toHaveValue('¡Madrid Steelers listos 🔥');
     await page.locator('[data-ref="chat-form"] button[type="submit"]').click();
 
     await expect(page.locator('.chat-message-item').last()).toContainText(
       'Madrid Steelers'
     );
     await expect(page.locator('.chat-message-body').last()).toContainText(
-      '¡Madrid Steelers listos!'
+      '¡Madrid Steelers listos 🔥'
     );
   });
 
