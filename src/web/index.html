@@ -4,9 +4,74 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NFL Spain — Sorteo de Divisiones</title>
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/layout.css" />
+    <link rel="stylesheet" href="./styles/components.css" />
+    <link rel="stylesheet" href="./styles/verification.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app" class="app-layout">
+      <header class="app-header">
+        <div>
+          <h1 class="brand-title" data-ref="brand-title">NFL Spain</h1>
+          <p class="brand-subtitle" data-ref="brand-subtitle">
+            Sorteo de divisiones · Temporada 26-27
+          </p>
+        </div>
+        <span class="status-badge status-scheduled" data-ref="status-badge"
+          >Programado</span
+        >
+      </header>
+
+      <main class="main-content">
+        <section class="draw-section" aria-label="Sorteo de divisiones">
+          <div class="timer-hero" data-ref="timer-hero">
+            <p class="timer-label" data-ref="timer-label">El sorteo empieza en</p>
+            <div class="timer-digits" data-ref="timer-digits">02:00</div>
+            <div class="spotlight-assignment" data-ref="spotlight-assignment">
+              Esperando primera asignación
+            </div>
+          </div>
+
+          <div
+            class="divisions-grid"
+            data-ref="divisions-grid"
+            aria-label="Cuadro de divisiones"
+          ></div>
+
+          <div class="pending-box" data-ref="pending-box">
+            <h2 class="pending-title" data-ref="pending-title">Equipos pendientes</h2>
+            <div class="pending-chips" data-ref="pending-chips"></div>
+          </div>
+        </section>
+
+        <aside id="chat-root" class="chat-section" aria-label="Chat de la liga"></aside>
+      </main>
+
+      <footer class="app-footer">
+        <p data-ref="progress-text">0 de 16 equipos sorteados</p>
+        <div class="hash-row">
+          <span>Compromiso de integridad (SHA-256):</span>
+          <code class="hash-code" data-ref="commitment-hash">--------...--------</code>
+          <button
+            type="button"
+            class="btn-copy"
+            data-ref="btn-copy-hash"
+            aria-label="Copiar hash de integridad"
+          >
+            Copiar
+          </button>
+        </div>
+        <div
+          class="verification-box"
+          data-ref="verification-box"
+          style="display: none"
+        ></div>
+      </footer>
+    </div>
+
+    <div id="live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

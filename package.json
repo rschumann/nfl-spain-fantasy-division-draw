@@ -40,6 +40,7 @@
     "dependency-cruiser": "^16.10.0",
     "eslint": "^9.21.0",
     "firebase-tools": "^13.31.2",
+    "happy-dom": "^20.11.6",
     "prettier": "^3.5.3",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
