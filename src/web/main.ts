@@ -1,12 +1,32 @@
 import { DrawSyncController } from './polling.js';
+import { ChatController } from './chat/chat-controller.js';
 
-export function initializeApp(): DrawSyncController | null {
+export function initializeApp(): {
+  draw: DrawSyncController;
+  chat: ChatController | null;
+} | null {
   const root = document.getElementById('app');
   if (!root) return null;
   const liveRegion = document.getElementById('live-announcer');
-  const controller = new DrawSyncController(root, liveRegion);
-  controller.start();
-  return controller;
+  const drawController = new DrawSyncController(root, liveRegion);
+  drawController.start();
+
+  const chatRoot = document.getElementById('chat-root');
+  const chatToggle = document.getElementById('chat-toggle-btn');
+  let chatController: ChatController | null = null;
+
+  if (chatRoot) {
+    chatController = new ChatController(chatRoot, chatToggle, {
+      apiKey: 'local-mock-api-key',
+      authDomain: 'nfl-spain-draw-local.firebaseapp.com',
+      projectId: 'nfl-spain-draw-local',
+      appId: '1:123456789:web:abcdef',
+      useEmulators: true
+    });
+    chatController.start();
+  }
+
+  return { draw: drawController, chat: chatController };
 }
 
 if (typeof document !== 'undefined') {
