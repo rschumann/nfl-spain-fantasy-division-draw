@@ -99,9 +99,7 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     expect(container.querySelector('.slot-item.is-my-team')).not.toBeNull();
     expect(container.querySelector('.team-chip.is-my-team')).not.toBeNull();
     expect(container.querySelector('.team-chip .my-team-tag')?.textContent).toBe('Tú');
-    expect(container.querySelector('.slot-item .my-team-tag')?.textContent).toBe(
-      'Tu equipo'
-    );
+    expect(container.querySelector('.slot-item .my-team-tag')?.textContent).toBe('Tú');
 
     renderPendingTeams(container, [], '16 de 16 equipos sorteados');
     expect(container.querySelector('.team-chip')?.textContent).toContain(

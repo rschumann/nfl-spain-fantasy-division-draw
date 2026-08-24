@@ -3,7 +3,7 @@ import type { PublicDivision, PublicAssignment } from '../domain/types.js';
 function formatSlotTeam(name: string, isOnline: boolean, isMyTeam: boolean): string {
   const dot = isOnline ? '<span class="online-dot"></span> ' : '';
   if (isMyTeam) {
-    return `<span class="my-team-star">★</span> ${dot}<strong>${name}</strong> <span class="my-team-tag">Tu equipo</span>`;
+    return `<span class="my-team-star">★</span> ${dot}<strong>${name}</strong> <span class="my-team-tag">Tú</span>`;
   }
   return isOnline ? `${dot}${name}` : name;
 }

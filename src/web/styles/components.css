@@ -67,7 +67,6 @@
 .div-SOUTH {
   border-top: 3px solid var(--color-div-south);
 }
-
 .slot-list {
   list-style: none;
 }
@@ -91,6 +90,11 @@
 .slot-empty {
   color: var(--color-text-muted);
   font-style: italic;
+}
+.slot-team {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .slot-order {
@@ -130,6 +134,7 @@
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   font-size: 0.8125rem;
+  white-space: nowrap;
 }
 
 .team-chip.is-online {
