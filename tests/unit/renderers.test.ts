@@ -8,7 +8,7 @@ import { createDrawViewModel } from '../../src/web/view-model.js';
 import { DrawSyncController } from '../../src/web/polling.js';
 import type { PublicDrawDto } from '../../src/domain/types.js';
 
-describe('Web Renderers and Polling Sync (Task 06)', () => {
+describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
   const sampleDto: PublicDrawDto = {
     eventId: 'nfl-spain-26-27',
     leagueName: 'NFL Spain',
@@ -109,17 +109,24 @@ describe('Web Renderers and Polling Sync (Task 06)', () => {
     );
   });
 
-  it('renders verification and copy button interactions', () => {
+  it('renders verification details and offline command on completion', () => {
     const container = document.getElementById('app')!;
-    const vm = createDrawViewModel(sampleDto, 120);
-    renderVerification(container, vm, sampleDto);
-    const copyBtn = container.querySelector<HTMLButtonElement>(
-      '[data-ref="btn-copy-hash"]'
-    );
-    copyBtn?.click();
-    expect(
-      container.querySelector('[data-ref="commitment-hash"]')?.textContent
-    ).toContain('...');
+    const completeDto: PublicDrawDto = {
+      ...sampleDto,
+      status: 'complete',
+      revealedCount: 16,
+      pendingTeams: [],
+      verification: {
+        canonicalPayload: '{"eventId":"nfl-spain-26-27"}',
+        seedHex: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+      }
+    };
+    const vm = createDrawViewModel(completeDto, 0);
+    renderVerification(container, vm, completeDto);
+    const box = container.querySelector<HTMLElement>('[data-ref="verification-box"]');
+    expect(box?.style.display).toBe('flex');
+    expect(box?.textContent).toContain('Semilla revelada:');
+    expect(box?.textContent).toContain('Comando de auditoría:');
   });
 
   it('handles sync controller updates and live announcements', async () => {

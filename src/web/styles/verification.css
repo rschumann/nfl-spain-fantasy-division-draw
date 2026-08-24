@@ -52,6 +52,35 @@
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
+  word-break: break-all;
+}
+
+.verification-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-sm);
+}
+
+.verification-status {
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.verification-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.verification-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .btn-copy {
@@ -62,7 +91,9 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.75rem;
+  align-self: flex-start;
 }
+
 .btn-copy:hover {
   background: var(--color-border);
 }
