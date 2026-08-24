@@ -22,9 +22,12 @@ function loadBaseUrl() {
 
 function printRow(entry, idx, baseUrl) {
   const num = String(idx + 1).padStart(2, ' ');
-  const name = entry.teamName.padEnd(24, ' ');
-  const key = entry.key.padEnd(15, ' ');
-  const url = `${baseUrl}/?key=${entry.key}`;
+  const name = entry.teamName.padEnd(22, ' ');
+  const isPending = entry.key === 'pendiente-invitacion';
+  const key = isPending ? 'PENDIENTE'.padEnd(14, ' ') : entry.key.padEnd(14, ' ');
+  const url = isPending
+    ? '(Invitación no aceptada en ESPN)'
+    : `${baseUrl}/?key=${entry.key}`;
   console.info(`| ${num} | ${name} | ${key} | ${url}`);
 }
 
@@ -42,10 +45,10 @@ function main() {
   );
 
   console.info(
-    '| #  | Equipo                   | Clave / Token   | Enlace Personalizado'
+    '| #  | Equipo                 | Token          | Enlace Personalizado'
   );
   console.info(
-    '|----|--------------------------|-----------------|----------------------------------------------------'
+    '|----|------------------------|----------------|----------------------------------------------------'
   );
 
   keys.forEach((entry, idx) => printRow(entry, idx, baseUrl));

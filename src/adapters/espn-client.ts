@@ -76,7 +76,8 @@ export class EspnFantasyClient {
       const raw = espnMap.get(i);
       const name = raw ? resolveName(raw, fallbackName) : fallbackName;
       const logoUrl = raw?.logo || undefined;
-      results.push({ id: canonicalId, name, logoUrl });
+      const isPending = !raw?.primaryOwner;
+      results.push({ id: canonicalId, name, logoUrl, isPending });
     }
     return results;
   }

@@ -1,5 +1,20 @@
 import { DrawSyncController } from './polling.js';
 import { ChatController } from './chat/chat-controller.js';
+import { AdminController } from './admin-controller.js';
+
+function setupAdmin(root: HTMLElement): void {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+  const adminKey = params.get('adminKey') || localStorage.getItem('adminKey');
+  if (adminKey) {
+    localStorage.setItem('adminKey', adminKey);
+    const header = root.querySelector<HTMLElement>('.app-header');
+    if (header) {
+      const admin = new AdminController(adminKey);
+      void admin.init(header);
+    }
+  }
+}
 
 export function initializeApp(): {
   draw: DrawSyncController;
@@ -19,6 +34,8 @@ export function initializeApp(): {
     chatController = new ChatController(chatRoot, chatToggle);
     chatController.start();
   }
+
+  setupAdmin(root);
 
   return { draw: drawController, chat: chatController };
 }

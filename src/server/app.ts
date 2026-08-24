@@ -11,6 +11,7 @@ import { drawRoute } from './routes/draw-route.js';
 import { healthRoute } from './routes/health-route.js';
 import { createAuthRoutes } from './routes/auth-route.js';
 import { createTeamRoutes } from './routes/team-route.js';
+import { createAdminRoutes } from './routes/admin-route.js';
 import { createChatRoutes } from './routes/chat-route.js';
 import { ChatStore } from './chat-store.js';
 
@@ -83,6 +84,7 @@ export async function createServerApp(
   await app.register(healthRoute, deps);
   await app.register(createAuthRoutes(registry));
   await app.register(createTeamRoutes({ registry }));
+  await app.register(createAdminRoutes({ config: deps.config, registry }));
   await app.register(createChatRoutes(store));
   setupErrorHandlers(app);
   return app;

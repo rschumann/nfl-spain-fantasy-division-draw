@@ -26,6 +26,7 @@ export const rawEnvSchema = z.object({
   HOST: z.string().default('127.0.0.1'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   BASE_URL: z.string().default('http://127.0.0.1:3000'),
+  ADMIN_KEY: z.string().default('admin-secret-key-998877'),
   ESPN_ENDPOINT_URL: z.string().optional(),
   ESPN_LEAGUE_ID: z.string().default('763332624'),
   ESPN_SEASON: z.string().default('2026'),

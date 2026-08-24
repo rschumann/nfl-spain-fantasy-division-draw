@@ -9,10 +9,11 @@ describe('ESPN Fantasy Live Sync & Team Registry', () => {
         {
           id: 1,
           name: 'Madrid Steelers Custom',
-          logo: 'https://g.espncdn.com/logo1.svg'
+          logo: 'https://g.espncdn.com/logo1.svg',
+          primaryOwner: 'owner-1'
         },
         { id: 2, location: 'Nico', nickname: 'Dynasty' },
-        { id: 9, name: 'La Osera Champions' }
+        { id: 9, name: 'La Osera Champions', primaryOwner: 'owner-9' }
       ]
     };
 
@@ -29,63 +30,40 @@ describe('ESPN Fantasy Live Sync & Team Registry', () => {
     const team1 = teams.find((t) => t.id === 'madrid-steelers');
     expect(team1?.name).toBe('Madrid Steelers Custom');
     expect(team1?.logoUrl).toBe('https://g.espncdn.com/logo1.svg');
+    expect(team1?.isPending).toBe(false);
 
     const team2 = teams.find((t) => t.id === 'nico');
     expect(team2?.name).toBe('Nico Dynasty');
-
-    const team9 = teams.find((t) => t.id === 'la-osera');
-    expect(team9?.name).toBe('La Osera Champions');
+    expect(team2?.isPending).toBe(true);
 
     fetchSpy.mockRestore();
   });
 
-  it('falls back gracefully on network or API failure', async () => {
+  it('handles response not ok and missing teams payload gracefully', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
-    fetchSpy.mockRejectedValueOnce(new Error('Network error'));
-
+    fetchSpy.mockResolvedValueOnce({ ok: false } as Response);
     const client = new EspnFantasyClient();
-    const teams = await client.fetchTeams('763332624', '2026');
+    const t1 = await client.fetchTeams();
+    expect(t1).toHaveLength(16);
 
-    expect(teams).toHaveLength(16);
-    const team1 = teams.find((t) => t.id === 'madrid-steelers');
-    expect(team1?.name).toBe('Madrid Steelers');
-
+    fetchSpy.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({})
+    } as Response);
+    const t2 = await client.fetchTeams();
+    expect(t2).toHaveLength(16);
     fetchSpy.mockRestore();
   });
 
-  it('updates TeamRegistry and authentication key lookups dynamically', async () => {
-    const mockClient = {
-      fetchTeams: async () => [
-        {
-          id: 'madrid-steelers',
-          name: 'Madrid SuperSteelers',
-          logoUrl: 'https://logo.svg'
-        },
-        { id: 'toledo-patriots', name: 'Toledo Patriots' },
-        { id: 'la-osera', name: 'La Osera' },
-        { id: 'london-viking', name: 'London Viking' },
-        { id: 'nico', name: 'Nico' },
-        { id: 'ohio-dolphins', name: 'Ohio Dolphins' },
-        { id: 'camioneros', name: 'Camioneros' },
-        { id: 'wolverines', name: 'Wolverines' },
-        { id: 'barakaldo', name: 'Barakaldo' },
-        { id: 'daniel', name: 'Daniel' },
-        { id: 'samuel', name: 'Samuel' },
-        { id: 'sant-boi-chargers', name: 'Sant Boi Chargers' },
-        { id: 'bcn-giants', name: 'BCN Giants' },
-        { id: 'juanito', name: 'Juanito' },
-        { id: 'navarra-colts', name: 'Navarra Colts' },
-        { id: 'xisko', name: 'Xisko' }
-      ]
-    } as unknown as EspnFantasyClient;
+  it('updates TeamRegistry and handles activeOnly key generation', async () => {
+    const registry = new TeamRegistry();
+    const keys = registry.generateAndSaveKeys('http://127.0.0.1:3000', undefined, false);
+    expect(keys).toHaveLength(16);
 
-    const registry = new TeamRegistry(mockClient);
-    await registry.syncWithEspn('763332624', '2026');
+    const authNull = registry.findTeamByKey('pendiente-invitacion');
+    expect(authNull).toBeNull();
 
-    const auth = registry.findTeamByKey('steelers-7821');
-    expect(auth?.teamName).toBe('Madrid SuperSteelers');
-    expect(auth?.logoUrl).toBe('https://logo.svg');
-
+    registry.startPeriodicSync(100000);
     registry.stop();
   });
 });

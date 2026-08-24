@@ -25,6 +25,7 @@ export interface AppConfig {
   readonly host: string;
   readonly port: number;
   readonly baseUrl: string;
+  readonly adminKey: string;
   readonly espnEndpointUrl?: string;
   readonly espnLeagueId: string;
   readonly espnSeason: string;
@@ -107,6 +108,7 @@ function createServerConfig(p: ParsedRawEnv) {
     host: p.HOST,
     port: p.PORT,
     baseUrl: p.BASE_URL,
+    adminKey: p.ADMIN_KEY,
     espnEndpointUrl: p.ESPN_ENDPOINT_URL,
     espnLeagueId: p.ESPN_LEAGUE_ID,
     espnSeason: p.ESPN_SEASON

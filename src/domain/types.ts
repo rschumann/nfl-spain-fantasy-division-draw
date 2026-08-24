@@ -4,6 +4,7 @@ export interface Team {
   readonly id: string;
   readonly name: string;
   readonly logoUrl?: string;
+  readonly isPending?: boolean;
 }
 
 export interface Division {
@@ -44,6 +45,7 @@ export interface PublicAssignment {
   readonly teamId: string;
   readonly teamName: string;
   readonly logoUrl?: string;
+  readonly isPending?: boolean;
   readonly divisionId: DivisionId;
   readonly revealAt: string;
 }

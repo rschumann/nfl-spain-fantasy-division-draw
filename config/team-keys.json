@@ -1,22 +1,82 @@
 [
-  { "teamId": "madrid-steelers", "teamName": "Madrid Steelers", "key": "steelers-7821" },
-  { "teamId": "toledo-patriots", "teamName": "Toledo Patriots", "key": "patriots-4912" },
-  { "teamId": "la-osera", "teamName": "La Osera", "key": "osera-3829" },
-  { "teamId": "london-viking", "teamName": "London Viking", "key": "viking-9102" },
-  { "teamId": "nico", "teamName": "Nico", "key": "nico-5512" },
-  { "teamId": "ohio-dolphins", "teamName": "Ohio Dolphins", "key": "dolphins-6671" },
-  { "teamId": "camioneros", "teamName": "Camioneros", "key": "camioneros-8823" },
-  { "teamId": "wolverines", "teamName": "Wolverines", "key": "wolverines-1928" },
-  { "teamId": "barakaldo", "teamName": "Barakaldo", "key": "barakaldo-4491" },
-  { "teamId": "daniel", "teamName": "Daniel", "key": "daniel-3319" },
-  { "teamId": "samuel", "teamName": "Samuel", "key": "samuel-7728" },
+  {
+    "teamId": "madrid-steelers",
+    "teamName": "Madrid Steelers",
+    "key": "steelers-7821"
+  },
+  {
+    "teamId": "toledo-patriots",
+    "teamName": "Toledo Patriots",
+    "key": "patriots-4912"
+  },
+  {
+    "teamId": "la-osera",
+    "teamName": "La Osera",
+    "key": "osera-3829"
+  },
+  {
+    "teamId": "london-viking",
+    "teamName": "London Viking",
+    "key": "viking-9102"
+  },
+  {
+    "teamId": "nico",
+    "teamName": "Nico",
+    "key": "nico-5512"
+  },
+  {
+    "teamId": "ohio-dolphins",
+    "teamName": "Ohio Dolphins",
+    "key": "dolphins-6671"
+  },
+  {
+    "teamId": "camioneros",
+    "teamName": "Camioneros",
+    "key": "camioneros-8823"
+  },
+  {
+    "teamId": "wolverines",
+    "teamName": "Wolverines",
+    "key": "wolverines-1928"
+  },
+  {
+    "teamId": "barakaldo",
+    "teamName": "Barakaldo",
+    "key": "barakaldo-4491"
+  },
+  {
+    "teamId": "daniel",
+    "teamName": "Daniel",
+    "key": "daniel-3319"
+  },
+  {
+    "teamId": "samuel",
+    "teamName": "Samuel",
+    "key": "samuel-7728"
+  },
   {
     "teamId": "sant-boi-chargers",
     "teamName": "Sant Boi Chargers",
     "key": "chargers-5501"
   },
-  { "teamId": "bcn-giants", "teamName": "BCN Giants", "key": "giants-2283" },
-  { "teamId": "juanito", "teamName": "Juanito", "key": "juanito-6614" },
-  { "teamId": "navarra-colts", "teamName": "Navarra Colts", "key": "colts-7739" },
-  { "teamId": "xisko", "teamName": "Xisko", "key": "xisko-9912" }
+  {
+    "teamId": "bcn-giants",
+    "teamName": "BCN Giants",
+    "key": "giants-2283"
+  },
+  {
+    "teamId": "juanito",
+    "teamName": "Juanito",
+    "key": "juanito-6614"
+  },
+  {
+    "teamId": "navarra-colts",
+    "teamName": "Navarra Colts",
+    "key": "colts-7739"
+  },
+  {
+    "teamId": "xisko",
+    "teamName": "Xisko",
+    "key": "xisko-9912"
+  }
 ]
