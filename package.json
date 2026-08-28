@@ -9,7 +9,7 @@
     "dev:server": "tsx watch src/server/index.ts",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
-    "build:server": "tsc -p tsconfig.server.json && esbuild src/server/netlify-handler.ts --bundle --platform=node --target=node20 --format=esm --outfile=netlify-dist-functions/api.js && cp netlify-dist-functions/api.js netlify/functions/api.js",
+    "build:server": "tsc -p tsconfig.server.json && esbuild src/server/netlify-handler.ts --bundle --platform=node --target=node20 --format=esm --outfile=netlify/functions/api.js && cp netlify/functions/api.js netlify/functions/draw.js && cp netlify/functions/api.js netlify/functions/health.js",
     "start": "tsx src/server/index.ts",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
     "lint": "eslint .",

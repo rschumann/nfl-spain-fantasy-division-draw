@@ -44,9 +44,9 @@ function buildInjectUrl(event: HandlerEvent): string {
     (event.headers && event.headers['x-original-uri']);
   if (forwarded && typeof forwarded === 'string' && forwarded.startsWith('/api')) {
     path = forwarded;
-  } else if (path.startsWith('/.netlify/functions/api')) {
-    const sub = path.replace(/^\/\.netlify\/functions\/api/, '');
-    path = sub.startsWith('/') ? `/api${sub}` : `/api/${sub}`;
+  } else if (path.startsWith('/.netlify/functions/')) {
+    const sub = path.replace(/^\/\.netlify\/functions\//, '').replace(/^api\/?/, '');
+    path = sub ? `/api/${sub}` : '/api/draw';
   }
   if (!event.queryStringParameters) return path;
   const params = new URLSearchParams();
