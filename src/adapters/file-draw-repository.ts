@@ -16,6 +16,8 @@ import { z } from 'zod';
 import type { DrawRepository } from '../application/ports.js';
 import type { LockedDrawState } from '../domain/types.js';
 
+import lockedDrawFallback from '../../config/locked-draw.json' with { type: 'json' };
+
 const lockedStateSchema = z.object({
   schemaVersion: z.literal(1),
   algorithmVersion: z.literal('hmac-sha256-fisher-yates-v1'),
@@ -40,21 +42,29 @@ export class FileDrawRepository implements DrawRepository {
   constructor(private readonly filePath: string) {}
 
   async loadLockedDraw(eventId: string): Promise<LockedDrawState | null> {
-    if (!existsSync(this.filePath)) return null;
-    try {
-      const raw = readFileSync(this.filePath, 'utf8');
-      const parsed = lockedStateSchema.parse(JSON.parse(raw));
-      if (parsed.eventId !== eventId) {
+    if (existsSync(this.filePath)) {
+      try {
+        const raw = readFileSync(this.filePath, 'utf8');
+        const parsed = lockedStateSchema.parse(JSON.parse(raw));
+        if (parsed.eventId !== eventId) {
+          throw new Error(
+            `State eventId mismatch: file has ${parsed.eventId}, expected ${eventId}`
+          );
+        }
+        return parsed as unknown as LockedDrawState;
+      } catch (err) {
         throw new Error(
-          `State eventId mismatch: file has ${parsed.eventId}, expected ${eventId}`
+          `Failed to load locked draw state: ${err instanceof Error ? err.message : String(err)}`
         );
       }
-      return parsed as unknown as LockedDrawState;
-    } catch (err) {
-      throw new Error(
-        `Failed to load locked draw state: ${err instanceof Error ? err.message : String(err)}`
-      );
     }
+    if (
+      lockedDrawFallback &&
+      (lockedDrawFallback as { eventId?: string }).eventId === eventId
+    ) {
+      return lockedDrawFallback as unknown as LockedDrawState;
+    }
+    return null;
   }
 
   private writeAtomic(tempPath: string, content: string): void {

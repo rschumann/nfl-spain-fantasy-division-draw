@@ -31,9 +31,9 @@ export async function bootstrap(
       parsedStartTime <= new Date('2026-08-28T20:30:00.000Z').getTime();
 
     if (isStale || safeEnv.DRAW_EVENT_ID === 'nfl-spain-26-27') {
-      safeEnv.DRAW_EVENT_ID = 'nfl-spain-2026-draw-2300';
+      safeEnv.DRAW_EVENT_ID = 'nfl-spain-26-27-final';
       safeEnv.DRAW_START_AT = '2026-08-28T21:00:00.000Z';
-      safeEnv.DRAW_STATE_PATH = '/tmp/draw-state-2300.json';
+      safeEnv.DRAW_STATE_PATH = '/tmp/draw-state-final.json';
     }
   }
   const clock = new SystemClock();

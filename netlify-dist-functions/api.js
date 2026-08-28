@@ -52387,6 +52387,115 @@ var coerce = {
 };
 var NEVER = INVALID;
 
+// config/locked-draw.json
+var locked_draw_default = {
+  schemaVersion: 1,
+  algorithmVersion: "hmac-sha256-fisher-yates-v1",
+  eventId: "nfl-spain-26-27-final",
+  configFingerprint: "99d3e2a76649b0f539ae0b0d9778d72ac519ba60970fc4e4eafc5cb2c36e3a2f",
+  lockedAt: "2026-08-28T21:00:00.000Z",
+  seedHex: "658d6b1e3eb8d940f538a24bca52c8afc3391bf78bf357a2d05af7f3ce531996",
+  commitmentHash: "c17184fb9fe2ddc8ec0d1692004ba3b5be7021088c72e8b37d0574ad1e153e5c",
+  assignments: [
+    {
+      position: 1,
+      teamId: "ohio-dolphins",
+      divisionId: "WEST",
+      revealAt: "2026-08-28T21:02:00.000Z"
+    },
+    {
+      position: 2,
+      teamId: "team-16",
+      divisionId: "WEST",
+      revealAt: "2026-08-28T21:04:00.000Z"
+    },
+    {
+      position: 3,
+      teamId: "team-14",
+      divisionId: "SOUTH",
+      revealAt: "2026-08-28T21:06:00.000Z"
+    },
+    {
+      position: 4,
+      teamId: "team-18",
+      divisionId: "SOUTH",
+      revealAt: "2026-08-28T21:08:00.000Z"
+    },
+    {
+      position: 5,
+      teamId: "team-13",
+      divisionId: "EAST",
+      revealAt: "2026-08-28T21:10:00.000Z"
+    },
+    {
+      position: 6,
+      teamId: "barakaldo",
+      divisionId: "NORTH",
+      revealAt: "2026-08-28T21:12:00.000Z"
+    },
+    {
+      position: 7,
+      teamId: "navarra-colts",
+      divisionId: "NORTH",
+      revealAt: "2026-08-28T21:14:00.000Z"
+    },
+    {
+      position: 8,
+      teamId: "bcn-giants",
+      divisionId: "EAST",
+      revealAt: "2026-08-28T21:16:00.000Z"
+    },
+    {
+      position: 9,
+      teamId: "team-17",
+      divisionId: "SOUTH",
+      revealAt: "2026-08-28T21:18:00.000Z"
+    },
+    {
+      position: 10,
+      teamId: "camioneros",
+      divisionId: "NORTH",
+      revealAt: "2026-08-28T21:20:00.000Z"
+    },
+    {
+      position: 11,
+      teamId: "la-osera",
+      divisionId: "WEST",
+      revealAt: "2026-08-28T21:22:00.000Z"
+    },
+    {
+      position: 12,
+      teamId: "team-15",
+      divisionId: "WEST",
+      revealAt: "2026-08-28T21:24:00.000Z"
+    },
+    {
+      position: 13,
+      teamId: "madrid-steelers",
+      divisionId: "SOUTH",
+      revealAt: "2026-08-28T21:26:00.000Z"
+    },
+    {
+      position: 14,
+      teamId: "toledo-patriots",
+      divisionId: "NORTH",
+      revealAt: "2026-08-28T21:28:00.000Z"
+    },
+    {
+      position: 15,
+      teamId: "daniel",
+      divisionId: "EAST",
+      revealAt: "2026-08-28T21:30:00.000Z"
+    },
+    {
+      position: 16,
+      teamId: "samuel",
+      divisionId: "EAST",
+      revealAt: "2026-08-28T21:32:00.000Z"
+    }
+  ]
+};
+
 // src/adapters/file-draw-repository.ts
 var lockedStateSchema = external_exports.object({
   schemaVersion: external_exports.literal(1),
@@ -52410,21 +52519,26 @@ var FileDrawRepository = class {
     this.filePath = filePath;
   }
   async loadLockedDraw(eventId) {
-    if (!existsSync(this.filePath)) return null;
-    try {
-      const raw = readFileSync(this.filePath, "utf8");
-      const parsed = lockedStateSchema.parse(JSON.parse(raw));
-      if (parsed.eventId !== eventId) {
+    if (existsSync(this.filePath)) {
+      try {
+        const raw = readFileSync(this.filePath, "utf8");
+        const parsed = lockedStateSchema.parse(JSON.parse(raw));
+        if (parsed.eventId !== eventId) {
+          throw new Error(
+            `State eventId mismatch: file has ${parsed.eventId}, expected ${eventId}`
+          );
+        }
+        return parsed;
+      } catch (err) {
         throw new Error(
-          `State eventId mismatch: file has ${parsed.eventId}, expected ${eventId}`
+          `Failed to load locked draw state: ${err instanceof Error ? err.message : String(err)}`
         );
       }
-      return parsed;
-    } catch (err) {
-      throw new Error(
-        `Failed to load locked draw state: ${err instanceof Error ? err.message : String(err)}`
-      );
     }
+    if (locked_draw_default && locked_draw_default.eventId === eventId) {
+      return locked_draw_default;
+    }
+    return null;
   }
   writeAtomic(tempPath, content) {
     const fd = openSync(tempPath, "w", 384);
@@ -53817,9 +53931,9 @@ async function bootstrap(envRecord = process.env) {
     const parsedStartTime = Date.parse(rawStart);
     const isStale = !isNaN(parsedStartTime) && parsedStartTime <= (/* @__PURE__ */ new Date("2026-08-28T20:30:00.000Z")).getTime();
     if (isStale || safeEnv.DRAW_EVENT_ID === "nfl-spain-26-27") {
-      safeEnv.DRAW_EVENT_ID = "nfl-spain-2026-draw-2300";
+      safeEnv.DRAW_EVENT_ID = "nfl-spain-26-27-final";
       safeEnv.DRAW_START_AT = "2026-08-28T21:00:00.000Z";
-      safeEnv.DRAW_STATE_PATH = "/tmp/draw-state-2300.json";
+      safeEnv.DRAW_STATE_PATH = "/tmp/draw-state-final.json";
     }
   }
   const clock = new SystemClock();
