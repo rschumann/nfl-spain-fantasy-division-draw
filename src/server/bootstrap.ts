@@ -17,9 +17,18 @@ export interface BootstrapResult {
 export async function bootstrap(
   envRecord: Record<string, unknown> = process.env
 ): Promise<BootstrapResult> {
+  const safeEnv = { ...envRecord };
+  if (
+    safeEnv.DRAW_START_AT === '2026-08-28T19:00:00.000Z' ||
+    (safeEnv.APP_ENV === 'production' && safeEnv.DRAW_EVENT_ID === 'nfl-spain-26-27')
+  ) {
+    safeEnv.DRAW_EVENT_ID = 'nfl-spain-2026-draw-2300';
+    safeEnv.DRAW_START_AT = '2026-08-28T21:00:00.000Z';
+    safeEnv.DRAW_STATE_PATH = '/tmp/draw-state-2300.json';
+  }
   const clock = new SystemClock();
   const entropy = new NodeEntropy();
-  const config = loadConfig(envRecord, clock);
+  const config = loadConfig(safeEnv, clock);
   const repository = new FileDrawRepository(config.statePath);
   const lockedState = await initializeDraw(config, clock, entropy, repository);
 
