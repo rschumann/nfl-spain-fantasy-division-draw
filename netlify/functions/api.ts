@@ -21,11 +21,13 @@ const defaultEnv: Record<string, string> = {
 };
 
 async function getFastifyApp(): Promise<FastifyInstance> {
-  if (appInstance) return appInstance;
   const envMap = {
     ...defaultEnv,
-    ...process.env
+    ...process.env,
+    DRAW_EVENT_ID: 'nfl-spain-26-27-final',
+    DRAW_START_AT: '2026-08-28T21:00:00.000Z'
   };
+  if (appInstance) return appInstance;
   const { app } = await bootstrap(envMap);
   appInstance = app;
   await appInstance.ready();
