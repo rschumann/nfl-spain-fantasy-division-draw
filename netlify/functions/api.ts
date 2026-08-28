@@ -34,7 +34,11 @@ async function getFastifyApp(): Promise<FastifyInstance> {
 }
 
 function buildInjectUrl(event: HandlerEvent): string {
-  const path = event.path;
+  let path = event.path;
+  if (path.startsWith('/.netlify/functions/api')) {
+    const sub = path.replace(/^\/\.netlify\/functions\/api/, '');
+    path = sub.startsWith('/') ? `/api${sub}` : `/api/${sub}`;
+  }
   if (!event.queryStringParameters) return path;
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(event.queryStringParameters)) {
