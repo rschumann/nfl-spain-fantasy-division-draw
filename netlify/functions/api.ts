@@ -7,7 +7,7 @@ let appInstance: FastifyInstance | null = null;
 
 const defaultEnv: Record<string, string> = {
   APP_ENV: 'production',
-  DRAW_EVENT_ID: 'nfl-spain-26-27',
+  DRAW_EVENT_ID: 'nfl-spain-26-27-v2',
   LEAGUE_NAME: 'NFL Spain',
   SEASON_LABEL: '26-27',
   DRAW_TIMEZONE: 'Europe/Madrid',
