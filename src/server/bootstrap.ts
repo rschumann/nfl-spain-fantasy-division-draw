@@ -18,13 +18,23 @@ export async function bootstrap(
   envRecord: Record<string, unknown> = process.env
 ): Promise<BootstrapResult> {
   const safeEnv = { ...envRecord };
-  if (
-    safeEnv.DRAW_START_AT === '2026-08-28T19:00:00.000Z' ||
-    (safeEnv.APP_ENV === 'production' && safeEnv.DRAW_EVENT_ID === 'nfl-spain-26-27')
-  ) {
-    safeEnv.DRAW_EVENT_ID = 'nfl-spain-2026-draw-2300';
-    safeEnv.DRAW_START_AT = '2026-08-28T21:00:00.000Z';
-    safeEnv.DRAW_STATE_PATH = '/tmp/draw-state-2300.json';
+  const isTest =
+    safeEnv.APP_ENV === 'test' ||
+    typeof process.env.VITEST !== 'undefined' ||
+    process.env.NODE_ENV === 'test';
+
+  if (!isTest) {
+    const rawStart = safeEnv.DRAW_START_AT ? String(safeEnv.DRAW_START_AT) : '';
+    const parsedStartTime = Date.parse(rawStart);
+    const isStale =
+      !isNaN(parsedStartTime) &&
+      parsedStartTime <= new Date('2026-08-28T20:30:00.000Z').getTime();
+
+    if (isStale || safeEnv.DRAW_EVENT_ID === 'nfl-spain-26-27') {
+      safeEnv.DRAW_EVENT_ID = 'nfl-spain-2026-draw-2300';
+      safeEnv.DRAW_START_AT = '2026-08-28T21:00:00.000Z';
+      safeEnv.DRAW_STATE_PATH = '/tmp/draw-state-2300.json';
+    }
   }
   const clock = new SystemClock();
   const entropy = new NodeEntropy();
