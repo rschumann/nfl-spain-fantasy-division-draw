@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { EspnFantasyClient } from '../../src/adapters/espn-client.js';
 import { TeamRegistry } from '../../src/server/team-registry.js';
 
