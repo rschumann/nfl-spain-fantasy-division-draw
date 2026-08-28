@@ -3,8 +3,6 @@ import type { Handler, HandlerEvent } from '@netlify/functions';
 import type { FastifyInstance } from 'fastify';
 import { bootstrap } from '../../src/server/bootstrap.js';
 
-let appInstance: FastifyInstance | null = null;
-
 const defaultEnv: Record<string, string> = {
   APP_ENV: 'production',
   DRAW_EVENT_ID: 'nfl-spain-26-27-final',
@@ -16,7 +14,7 @@ const defaultEnv: Record<string, string> = {
   DRAW_RESET_ON_START: 'false',
   DIVISIONS_COUNT: '4',
   ADMIN_KEY: 'admin-secret-key-998877',
-  DRAW_STATE_PATH: '/tmp/draw-state.json',
+  DRAW_STATE_PATH: '/tmp/draw-state-final.json',
   VITE_FIREBASE_USE_EMULATORS: 'false'
 };
 
@@ -30,11 +28,9 @@ async function getFastifyApp(): Promise<FastifyInstance> {
     DRAW_REVEAL_INTERVAL_SECONDS: '120',
     DRAW_STATE_PATH: '/tmp/draw-state-final.json'
   };
-  if (appInstance) return appInstance;
   const { app } = await bootstrap(envMap);
-  appInstance = app;
-  await appInstance.ready();
-  return appInstance;
+  await app.ready();
+  return app;
 }
 
 function buildInjectUrl(event: HandlerEvent): string {
