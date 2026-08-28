@@ -21,6 +21,7 @@ export const rawEnvSchema = z.object({
   DRAW_REVEAL_INTERVAL_SECONDS: z.coerce.number().int().positive(),
   DRAW_RESET_ON_START: z
     .enum(['true', 'false', '1', '0'])
+    .default('false')
     .transform((v) => v === 'true' || v === '1'),
   DRAW_STATE_PATH: z.string().min(1),
   HOST: z.string().default('127.0.0.1'),

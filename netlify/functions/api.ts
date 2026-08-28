@@ -13,9 +13,11 @@ const defaultEnv: Record<string, string> = {
   DRAW_TIMEZONE: 'Europe/Madrid',
   DRAW_START_AT: '2026-08-28T19:00:00.000Z',
   DRAW_REVEAL_INTERVAL_SECONDS: '120',
+  DRAW_RESET_ON_START: 'false',
   DIVISIONS_COUNT: '4',
   ADMIN_KEY: 'admin-secret-key-998877',
-  DRAW_STATE_PATH: '/tmp/draw-state.json'
+  DRAW_STATE_PATH: '/tmp/draw-state.json',
+  VITE_FIREBASE_USE_EMULATORS: 'false'
 };
 
 async function getFastifyApp(): Promise<FastifyInstance> {
