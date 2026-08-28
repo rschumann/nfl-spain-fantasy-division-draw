@@ -81,6 +81,9 @@ export async function createServerApp(
       ? undefined
       : resolve(process.cwd(), '.data/chat-messages.json');
   const store = deps.chatStore ?? new ChatStore(chatFile);
+  if (deps.config.eventId === 'nfl-spain-26-27-final') {
+    store.clear();
+  }
   const registry = deps.registry ?? new TeamRegistry(new EspnFantasyClient());
   await registerSecurityHeaders(app);
   registerStaticAssets(app);

@@ -53909,6 +53909,9 @@ async function createServerApp(deps) {
   const app = (0, import_fastify.default)({ logger: false });
   const chatFile = deps.config.env === "test" ? void 0 : resolve3(process.cwd(), ".data/chat-messages.json");
   const store = deps.chatStore ?? new ChatStore(chatFile);
+  if (deps.config.eventId === "nfl-spain-26-27-final") {
+    store.clear();
+  }
   const registry = deps.registry ?? new TeamRegistry(new EspnFantasyClient());
   await registerSecurityHeaders(app);
   registerStaticAssets(app);
