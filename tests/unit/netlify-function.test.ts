@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { existsSync, unlinkSync } from 'node:fs';
-import { handler } from '../../netlify/functions/api.js';
+import { handler } from '../../src/server/netlify-handler.js';
 import type { HandlerEvent, HandlerContext } from '@netlify/functions';
 
 describe('Netlify Functions API Gateway Handler', () => {
