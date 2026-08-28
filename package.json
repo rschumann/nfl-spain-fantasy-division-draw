@@ -9,7 +9,7 @@
     "dev:server": "tsx watch src/server/index.ts",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
-    "build:server": "tsc -p tsconfig.server.json && esbuild netlify/functions/api.ts --bundle --platform=node --target=node20 --format=esm --outfile=netlify-dist-functions/api.mjs",
+    "build:server": "tsc -p tsconfig.server.json && esbuild netlify/functions/api.ts --bundle --platform=node --target=node20 --format=esm --outfile=netlify-dist-functions/api.js",
     "start": "tsx src/server/index.ts",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
     "lint": "eslint .",
