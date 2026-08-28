@@ -66,10 +66,11 @@ export class EspnFantasyClient {
   }
 
   private mapEspnTeams(rawTeams: RawEspnTeam[]): readonly Team[] {
-    const sorted = [...rawTeams].sort((a, b) => a.id - b.id);
+    const valid = rawTeams.filter((t) => ESPN_ID_TO_TEAM_ID[t.id] !== undefined);
+    const sorted = [...valid].sort((a, b) => a.id - b.id);
     const results: Team[] = [];
     for (const raw of sorted) {
-      const canonicalId = ESPN_ID_TO_TEAM_ID[raw.id] || `team-${raw.id}`;
+      const canonicalId = ESPN_ID_TO_TEAM_ID[raw.id]!;
       const fallbackName = this.defaultMap.get(canonicalId) || `Team ${raw.id}`;
       const name = resolveName(raw, fallbackName);
       const logoUrl = raw.logo || undefined;
