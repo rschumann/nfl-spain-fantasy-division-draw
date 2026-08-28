@@ -1,8 +1,20 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { existsSync, unlinkSync } from 'node:fs';
 import { handler } from '../../netlify/functions/api.js';
 import type { HandlerEvent, HandlerContext } from '@netlify/functions';
 
 describe('Netlify Functions API Gateway Handler', () => {
+  beforeAll(() => {
+    const staleTmp = '/tmp/draw-state.json';
+    if (existsSync(staleTmp)) {
+      try {
+        unlinkSync(staleTmp);
+      } catch {
+        // ignore
+      }
+    }
+  });
+
   it('serves GET /api/health through handler', async () => {
     const event = {
       path: '/api/health',
