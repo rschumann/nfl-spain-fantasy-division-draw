@@ -5,6 +5,7 @@ export function applyStaleGuard(
   currentDto: PublicDrawDto | null
 ): PublicDrawDto {
   if (!currentDto) return newDto;
+  if (newDto.eventId !== currentDto.eventId) return newDto;
   if (newDto.revealedCount < currentDto.revealedCount) {
     console.warn(
       `Ignoring stale API response: new revealedCount (${newDto.revealedCount}) < current (${currentDto.revealedCount})`
