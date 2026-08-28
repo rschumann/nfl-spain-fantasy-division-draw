@@ -55,14 +55,13 @@ export async function initializeDraw(
     await repository.resetAllowedState();
     return createAndPersistNewDraw(config, clock, entropy, repository);
   }
-  const existing = await repository.loadLockedDraw(config.eventId);
-  if (existing) {
-    if (existing.configFingerprint !== config.configFingerprint) {
-      throw new Error(
-        `Configuration mismatch: existing locked draw fingerprint (${existing.configFingerprint}) does not match current configuration (${config.configFingerprint})`
-      );
+  try {
+    const existing = await repository.loadLockedDraw(config.eventId);
+    if (existing && existing.configFingerprint === config.configFingerprint) {
+      return existing;
     }
-    return existing;
+  } catch {
+    // Stale or incompatible state file; generate fresh state
   }
   return createAndPersistNewDraw(config, clock, entropy, repository);
 }
