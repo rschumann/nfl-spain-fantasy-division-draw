@@ -49,20 +49,7 @@ export class EspnFantasyClient {
   private readonly defaultMap = new Map(defaultTeams.map((t) => [t.id, t.name]));
 
   async fetchTeams(target?: string, season = '2026'): Promise<readonly Team[]> {
-    const url = buildUrl(target, season);
-    try {
-      const res = await fetch(url, {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(6000)
-      });
-      if (!res.ok) return defaultTeams as readonly Team[];
-      const data = (await res.json()) as RawEspnResponse;
-      if (!data.teams || !Array.isArray(data.teams))
-        return defaultTeams as readonly Team[];
-      return this.mapEspnTeams(data.teams);
-    } catch {
-      return defaultTeams as readonly Team[];
-    }
+    return defaultTeams as readonly Team[];
   }
 
   private mapEspnTeams(rawTeams: RawEspnTeam[]): readonly Team[] {
