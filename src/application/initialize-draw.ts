@@ -4,8 +4,6 @@ import type { LockedDrawState, DrawPlan } from '../domain/types.js';
 import { createDrawPlan } from '../domain/create-plan.js';
 import { canonicalizeDrawPlan, computeCommitmentHash } from '../domain/commitment.js';
 
-import { createHmac } from 'node:crypto';
-
 function buildLockedState(config: AppConfig, plan: DrawPlan): LockedDrawState {
   const canonical = canonicalizeDrawPlan(plan);
   const hash = computeCommitmentHash(canonical);
@@ -23,14 +21,12 @@ function buildLockedState(config: AppConfig, plan: DrawPlan): LockedDrawState {
 
 async function createAndPersistNewDraw(
   config: AppConfig,
-  _clock: Clock,
-  _entropy: EntropySource,
+  clock: Clock,
+  entropy: EntropySource,
   repository: DrawRepository
 ): Promise<LockedDrawState> {
-  const seedHex = createHmac('sha256', 'nfl-spain-2026-secret-seed-key')
-    .update(`${config.eventId}:${config.configFingerprint}`)
-    .digest('hex');
-  const lockedAt = config.startAtUtc;
+  const seedHex = entropy.generateSeedHex();
+  const lockedAt = clock.now().toISOString();
   const plan = createDrawPlan(
     config.eventId,
     seedHex,
@@ -55,13 +51,14 @@ export async function initializeDraw(
     await repository.resetAllowedState();
     return createAndPersistNewDraw(config, clock, entropy, repository);
   }
-  try {
-    const existing = await repository.loadLockedDraw(config.eventId);
-    if (existing && existing.configFingerprint === config.configFingerprint) {
-      return existing;
+  const existing = await repository.loadLockedDraw(config.eventId);
+  if (existing) {
+    if (existing.configFingerprint !== config.configFingerprint) {
+      throw new Error(
+        `Configuration mismatch: existing locked draw fingerprint (${existing.configFingerprint}) does not match current configuration (${config.configFingerprint})`
+      );
     }
-  } catch {
-    // Stale or incompatible state file; generate fresh state
+    return existing;
   }
   return createAndPersistNewDraw(config, clock, entropy, repository);
 }
