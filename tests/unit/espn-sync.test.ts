@@ -5,7 +5,12 @@ import { TeamRegistry } from '../../src/server/team-registry.js';
 describe('ESPN Fantasy Live Sync & Team Registry', () => {
   it('maps ESPN API response with custom team names and logos', async () => {
     const mockTeams = [
-      { id: 1, name: 'Madrid Steelers Custom', logo: 'https://g.espncdn.com/logo1.svg', primaryOwner: 'owner-1' },
+      {
+        id: 1,
+        name: 'Madrid Steelers Custom',
+        logo: 'https://g.espncdn.com/logo1.svg',
+        primaryOwner: 'owner-1'
+      },
       { id: 3, location: 'Barakaldo', nickname: 'Dynasty' },
       { id: 4, name: 'BCN Giants', primaryOwner: 'owner-4' },
       { id: 5, name: 'Toledo Patriots', primaryOwner: 'owner-5' },

@@ -21,8 +21,7 @@ function verifyAdminAuth(
   const query = req.query as { adminKey?: string; key?: string } | undefined;
   const queryKey = query?.adminKey || query?.key;
   const headerKey = (req.headers['x-admin-key'] || req.headers['x-team-key']) as
-    | string
-    | undefined;
+    string | undefined;
   const provided = queryKey || headerKey;
   if (!provided) {
     reply.status(401).send({ error: 'Clave de administrador incorrecta' });
