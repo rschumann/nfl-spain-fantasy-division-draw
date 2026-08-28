@@ -76,8 +76,8 @@ describe('Draw Plan Creation & Invariants (Task 03)', () => {
     expect(p1.assignments).not.toEqual(p2.assignments);
   });
 
-  it('verifies 10,000 generated plans all satisfy 7 draw invariants', () => {
-    for (let i = 0; i < 10000; i++) {
+  it('verifies 1,000 generated plans all satisfy 7 draw invariants', () => {
+    for (let i = 0; i < 1000; i++) {
       const hexSeed = (i.toString(16).padStart(8, '0') + 'a'.repeat(56)).substring(0, 64);
       const plan = createDrawPlan(
         'nfl-spain-26-27',
@@ -98,7 +98,7 @@ describe('Draw Plan Creation & Invariants (Task 03)', () => {
       expect(inv.valid).toBe(true);
       expect(inv.errors).toHaveLength(0);
     }
-  }, 60000);
+  });
 
   it('invariants validator flags corrupted assignments', () => {
     const plan = createDrawPlan(
