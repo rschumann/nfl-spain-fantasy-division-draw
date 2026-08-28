@@ -1,18 +1,98 @@
 [
-  { "id": "madrid-steelers", "name": "Madrid Steelers" },
-  { "id": "barakaldo", "name": "Barakaldo" },
-  { "id": "bcn-giants", "name": "BCN Giants" },
-  { "id": "toledo-patriots", "name": "Toledo Patriots" },
-  { "id": "ohio-dolphins", "name": "Ohio Dolphins" },
-  { "id": "daniel", "name": "Daniel" },
-  { "id": "la-osera", "name": "La Osera" },
-  { "id": "camioneros", "name": "Camioneros" },
-  { "id": "samuel", "name": "Samuel" },
-  { "id": "navarra-colts", "name": "Navarra Colts" },
-  { "id": "team-13", "name": "Team 13" },
-  { "id": "team-14", "name": "Team 14" },
-  { "id": "team-15", "name": "Team 15" },
-  { "id": "team-16", "name": "Team 16" },
-  { "id": "team-17", "name": "Team 17" },
-  { "id": "team-18", "name": "Team 18" }
+  {
+    "id": "madrid-steelers",
+    "name": "Madrid Steelers",
+    "logoUrl": "https://g.espncdn.com/lm-static/logo-packs/ffl/Blockparty-RobbHars/blockplayers-04.svg",
+    "isPending": false
+  },
+  {
+    "id": "barakaldo",
+    "name": "Barakaldo",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/20.svg",
+    "isPending": false
+  },
+  {
+    "id": "bcn-giants",
+    "name": "BCN Giants",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/12.svg",
+    "isPending": false
+  },
+  {
+    "id": "toledo-patriots",
+    "name": "Toledo Patriots",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/1.svg",
+    "isPending": false
+  },
+  {
+    "id": "ohio-dolphins",
+    "name": "Ohio Dolphins",
+    "logoUrl": "https://g.espncdn.com/lm-static/logo-packs/ffl/Blockparty-RobbHars/blockplayers-09.svg",
+    "isPending": false
+  },
+  {
+    "id": "daniel",
+    "name": "Daniel",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/11.svg",
+    "isPending": false
+  },
+  {
+    "id": "la-osera",
+    "name": "La Osera",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/4.svg",
+    "isPending": false
+  },
+  {
+    "id": "camioneros",
+    "name": "Camioneros",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/8.svg",
+    "isPending": false
+  },
+  {
+    "id": "samuel",
+    "name": "Samuel",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/5.svg",
+    "isPending": false
+  },
+  {
+    "id": "navarra-colts",
+    "name": "Navarra Colts",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/18.svg",
+    "isPending": false
+  },
+  {
+    "id": "team-13",
+    "name": "Team 13",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/6.svg",
+    "isPending": true
+  },
+  {
+    "id": "team-14",
+    "name": "Team 14",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/19.svg",
+    "isPending": true
+  },
+  {
+    "id": "team-15",
+    "name": "Team 15",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/14.svg",
+    "isPending": true
+  },
+  {
+    "id": "team-16",
+    "name": "Team 16",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/16.svg",
+    "isPending": true
+  },
+  {
+    "id": "team-17",
+    "name": "Team 17",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/2.svg",
+    "isPending": true
+  },
+  {
+    "id": "team-18",
+    "name": "Team 18",
+    "logoUrl": "https://g.espncdn.com/lm-static/ffl/images/default_logos/15.svg",
+    "isPending": true
+  }
 ]
