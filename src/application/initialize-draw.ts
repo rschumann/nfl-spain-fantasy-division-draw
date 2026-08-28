@@ -23,8 +23,8 @@ function buildLockedState(config: AppConfig, plan: DrawPlan): LockedDrawState {
 
 async function createAndPersistNewDraw(
   config: AppConfig,
-  clock: Clock,
-  entropy: EntropySource,
+  _clock: Clock,
+  _entropy: EntropySource,
   repository: DrawRepository
 ): Promise<LockedDrawState> {
   const seedHex = createHmac('sha256', 'nfl-spain-2026-secret-seed-key')
