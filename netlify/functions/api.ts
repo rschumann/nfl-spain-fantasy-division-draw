@@ -12,7 +12,7 @@ const defaultEnv: Record<string, string> = {
   SEASON_LABEL: '26-27',
   DRAW_TIMEZONE: 'Europe/Madrid',
   DRAW_START_AT: '2026-08-28T19:00:00.000Z',
-  DRAW_REVEAL_INTERVAL_SECONDS: '60',
+  DRAW_REVEAL_INTERVAL_SECONDS: '120',
   DIVISIONS_COUNT: '4',
   ADMIN_KEY: 'admin-secret-key-998877',
   DRAW_STATE_PATH: '/tmp/draw-state.json'
