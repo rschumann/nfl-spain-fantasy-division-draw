@@ -11,19 +11,19 @@ export function isValidIanaTimezone(tz: string): boolean {
 
 export const rawEnvSchema = z.object({
   APP_ENV: z.enum(['local', 'production', 'test']).default('local'),
-  DRAW_EVENT_ID: z.string().min(1),
-  LEAGUE_NAME: z.string().min(1),
-  SEASON_LABEL: z.string().min(1),
-  DRAW_TIMEZONE: z.string().refine(isValidIanaTimezone, {
+  DRAW_EVENT_ID: z.string().min(1).default('nfl-spain-26-27-final'),
+  LEAGUE_NAME: z.string().min(1).default('NFL Spain'),
+  SEASON_LABEL: z.string().min(1).default('26-27'),
+  DRAW_TIMEZONE: z.string().default('Europe/Madrid').refine(isValidIanaTimezone, {
     message: 'Invalid IANA timezone'
   }),
-  DRAW_START_AT: z.string().min(1),
-  DRAW_REVEAL_INTERVAL_SECONDS: z.coerce.number().int().positive(),
+  DRAW_START_AT: z.string().min(1).default('2026-08-28T21:00:00.000Z'),
+  DRAW_REVEAL_INTERVAL_SECONDS: z.coerce.number().int().positive().default(120),
   DRAW_RESET_ON_START: z
     .enum(['true', 'false', '1', '0'])
     .default('false')
     .transform((v) => v === 'true' || v === '1'),
-  DRAW_STATE_PATH: z.string().min(1),
+  DRAW_STATE_PATH: z.string().min(1).default('/tmp/draw-state-final.json'),
   HOST: z.string().default('127.0.0.1'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   BASE_URL: z.string().default('http://127.0.0.1:3000'),
