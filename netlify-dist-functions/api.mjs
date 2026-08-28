@@ -53869,7 +53869,10 @@ async function getFastifyApp() {
 }
 function buildInjectUrl(event) {
   let path = event.path;
-  if (path.startsWith("/.netlify/functions/api")) {
+  const forwarded = event.headers && event.headers["x-forwarded-uri"] || event.headers && event.headers["x-original-uri"];
+  if (forwarded && typeof forwarded === "string" && forwarded.startsWith("/api")) {
+    path = forwarded;
+  } else if (path.startsWith("/.netlify/functions/api")) {
     const sub = path.replace(/^\/\.netlify\/functions\/api/, "");
     path = sub.startsWith("/") ? `/api${sub}` : `/api/${sub}`;
   }
