@@ -1,5 +1,6 @@
 import type { DrawViewModel } from './view-model.js';
 import type { UserTeamIdentity } from './presence.js';
+import { AdminController } from './admin-controller.js';
 
 function renderMyTeamBadge(headerEl: HTMLElement, myTeam: UserTeamIdentity | null): void {
   let badge = headerEl.querySelector<HTMLElement>('[data-ref="my-team-badge"]');
@@ -10,7 +11,22 @@ function renderMyTeamBadge(headerEl: HTMLElement, myTeam: UserTeamIdentity | nul
       badge.setAttribute('data-ref', 'my-team-badge');
       headerEl.appendChild(badge);
     }
-    badge.innerHTML = `🏈 Tu franquicia: <strong>${myTeam.teamName}</strong>`;
+    const isAdmin = myTeam.teamId === 'madrid-steelers';
+    const adminBtnHtml = isAdmin
+      ? ' <button type="button" class="admin-badge-btn" data-ref="admin-open-btn" style="margin-left: 8px; cursor: pointer;">👑 Admin</button>'
+      : '';
+    badge.innerHTML = `🏈 Tu franquicia: <strong>${myTeam.teamName}</strong>${adminBtnHtml}`;
+    if (isAdmin) {
+      const btn = badge.querySelector<HTMLButtonElement>('[data-ref="admin-open-btn"]');
+      if (btn) {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const key = myTeam.key || 'steelers-7821';
+          const admin = new AdminController(key);
+          void admin.initDirect();
+        };
+      }
+    }
   } else if (badge) {
     badge.remove();
   }

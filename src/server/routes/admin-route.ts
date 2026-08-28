@@ -15,17 +15,24 @@ export interface AdminRoutesOptions {
 
 function verifyAdminAuth(
   req: FastifyRequest,
-  expectedKey: string,
+  opts: AdminRoutesOptions,
   reply: FastifyReply
 ): boolean {
-  const queryKey = (req.query as { adminKey?: string })?.adminKey;
-  const headerKey = req.headers['x-admin-key'] as string | undefined;
+  const query = req.query as { adminKey?: string; key?: string } | undefined;
+  const queryKey = query?.adminKey || query?.key;
+  const headerKey = (req.headers['x-admin-key'] || req.headers['x-team-key']) as
+    | string
+    | undefined;
   const provided = queryKey || headerKey;
-  if (!provided || provided !== expectedKey) {
+  if (!provided) {
     reply.status(401).send({ error: 'Clave de administrador incorrecta' });
     return false;
   }
-  return true;
+  if (provided === opts.config.adminKey) return true;
+  const team = opts.registry.findTeamByKey(provided);
+  if (team && team.teamId === 'madrid-steelers') return true;
+  reply.status(401).send({ error: 'Clave de administrador incorrecta' });
+  return false;
 }
 
 function getKeysPath(env: string): string | undefined {
@@ -55,7 +62,7 @@ function buildConfigSummary(config: AppConfig) {
 function registerKeyGenerators(app: FastifyInstance, opts: AdminRoutesOptions): void {
   app.post('/api/admin/keys/generate-missing', async (req, reply) => {
     reply.header('Cache-Control', 'no-store');
-    if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+    if (!verifyAdminAuth(req, opts, reply)) return;
     const keys = opts.registry.generateMissingKeys(
       opts.config.baseUrl,
       getKeysPath(opts.config.env)
@@ -67,7 +74,7 @@ function registerKeyGenerators(app: FastifyInstance, opts: AdminRoutesOptions): 
     '/api/admin/keys/regenerate-team',
     async (req, reply) => {
       reply.header('Cache-Control', 'no-store');
-      if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+      if (!verifyAdminAuth(req, opts, reply)) return;
       const { teamId } = req.body || {};
       if (!teamId) return reply.status(400).send({ error: 'teamId requerido' });
       const keys = opts.registry.generateKeyForTeam(
@@ -83,7 +90,7 @@ function registerKeyGenerators(app: FastifyInstance, opts: AdminRoutesOptions): 
 function registerOtherActions(app: FastifyInstance, opts: AdminRoutesOptions): void {
   app.post('/api/admin/keys/generate', async (req, reply) => {
     reply.header('Cache-Control', 'no-store');
-    if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+    if (!verifyAdminAuth(req, opts, reply)) return;
     const keys = opts.registry.generateAndSaveKeys(
       opts.config.baseUrl,
       getKeysPath(opts.config.env),
@@ -94,7 +101,7 @@ function registerOtherActions(app: FastifyInstance, opts: AdminRoutesOptions): v
 
   app.post('/api/admin/espn/sync', async (req, reply) => {
     reply.header('Cache-Control', 'no-store');
-    if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+    if (!verifyAdminAuth(req, opts, reply)) return;
     const target = opts.config.espnEndpointUrl || opts.config.espnLeagueId;
     const teams = await opts.registry.syncWithEspn(target, opts.config.espnSeason);
     return { success: true, count: teams.length, teams };
@@ -105,7 +112,7 @@ export function createAdminRoutes(opts: AdminRoutesOptions): FastifyPluginAsync 
   return async (app) => {
     app.get('/api/admin/dashboard', async (req, reply) => {
       reply.header('Cache-Control', 'no-store');
-      if (!verifyAdminAuth(req, opts.config.adminKey, reply)) return;
+      if (!verifyAdminAuth(req, opts, reply)) return;
       return {
         config: buildConfigSummary(opts.config),
         keys: opts.registry.getAllTeamKeys(opts.config.baseUrl),

@@ -1,6 +1,7 @@
 export interface UserTeamIdentity {
   teamId: string;
   teamName: string;
+  key?: string;
 }
 
 class GlobalPresenceStore {

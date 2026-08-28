@@ -43,14 +43,22 @@ export class ChatController {
       if (res.valid && res.teamId && res.teamName) {
         this.session = { key: urlKey, teamId: res.teamId, teamName: res.teamName };
         saveStoredSession(this.session);
-        globalPresence.setMyTeam({ teamId: res.teamId, teamName: res.teamName });
+        globalPresence.setMyTeam({
+          teamId: res.teamId,
+          teamName: res.teamName,
+          key: urlKey
+        });
         return;
       }
     }
     this.session = getStoredSession();
     globalPresence.setMyTeam(
       this.session
-        ? { teamId: this.session.teamId, teamName: this.session.teamName }
+        ? {
+            teamId: this.session.teamId,
+            teamName: this.session.teamName,
+            key: this.session.key
+          }
         : null
     );
   }
@@ -106,7 +114,7 @@ export class ChatController {
       if (res.valid && res.teamId && res.teamName) {
         this.session = { key, teamId: res.teamId, teamName: res.teamName };
         saveStoredSession(this.session);
-        globalPresence.setMyTeam({ teamId: res.teamId, teamName: res.teamName });
+        globalPresence.setMyTeam({ teamId: res.teamId, teamName: res.teamName, key });
         this.renderSession();
         await this.syncMessages();
       } else {

@@ -40,6 +40,31 @@ describe('Admin Routes (Dashboard, Key Generation, ESPN Sync)', () => {
     expect(body.keys).toHaveLength(16);
   });
 
+  it('authenticates admin using madrid-steelers team key via query param and header', async () => {
+    const registry = new TeamRegistry();
+    const app = fastify();
+    await app.register(createAdminRoutes({ config, registry }));
+
+    const resQuery = await app.inject({
+      method: 'GET',
+      url: '/api/admin/dashboard?key=steelers-7821'
+    });
+    expect(resQuery.statusCode).toBe(200);
+
+    const resHeader = await app.inject({
+      method: 'GET',
+      url: '/api/admin/dashboard',
+      headers: { 'x-team-key': 'steelers-7821' }
+    });
+    expect(resHeader.statusCode).toBe(200);
+
+    const resOtherTeam = await app.inject({
+      method: 'GET',
+      url: '/api/admin/dashboard?key=patriots-4912'
+    });
+    expect(resOtherTeam.statusCode).toBe(401);
+  });
+
   it('generates missing keys and regenerates single team key', async () => {
     const registry = new TeamRegistry();
     const app = fastify();

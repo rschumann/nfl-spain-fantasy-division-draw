@@ -71,16 +71,24 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     `;
   });
 
-  it('renders header with personal team badge for authenticated team', () => {
+  it('renders header with personal team badge and admin button for madrid-steelers', () => {
     const container = document.getElementById('app')!;
     const vm1 = createDrawViewModel(sampleDto, 60);
     renderHeader(container, vm1, {
       teamId: 'madrid-steelers',
       teamName: 'Madrid Steelers'
     });
-    expect(container.querySelector('[data-ref="my-team-badge"]')?.textContent).toContain(
-      'Madrid Steelers'
-    );
+    const badge = container.querySelector('[data-ref="my-team-badge"]');
+    expect(badge?.textContent).toContain('Madrid Steelers');
+    expect(badge?.querySelector('[data-ref="admin-open-btn"]')).not.toBeNull();
+
+    renderHeader(container, vm1, {
+      teamId: 'toledo-patriots',
+      teamName: 'Toledo Patriots'
+    });
+    const badgeOther = container.querySelector('[data-ref="my-team-badge"]');
+    expect(badgeOther?.querySelector('[data-ref="admin-open-btn"]')).toBeNull();
+
     renderHeader(container, vm1, null);
     expect(container.querySelector('[data-ref="my-team-badge"]')).toBeNull();
   });

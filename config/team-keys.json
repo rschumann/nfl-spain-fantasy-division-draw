@@ -5,59 +5,9 @@
     "key": "steelers-7821"
   },
   {
-    "teamId": "toledo-patriots",
-    "teamName": "Toledo Patriots",
-    "key": "patriots-4912"
-  },
-  {
-    "teamId": "la-osera",
-    "teamName": "La Osera",
-    "key": "osera-3829"
-  },
-  {
-    "teamId": "london-viking",
-    "teamName": "London Viking",
-    "key": "viking-9102"
-  },
-  {
-    "teamId": "nico",
-    "teamName": "Nico",
-    "key": "nico-5512"
-  },
-  {
-    "teamId": "ohio-dolphins",
-    "teamName": "Ohio Dolphins",
-    "key": "dolphins-6671"
-  },
-  {
-    "teamId": "camioneros",
-    "teamName": "Camioneros",
-    "key": "camioneros-8823"
-  },
-  {
-    "teamId": "wolverines",
-    "teamName": "Wolverines",
-    "key": "wolverines-1928"
-  },
-  {
     "teamId": "barakaldo",
     "teamName": "Barakaldo",
     "key": "barakaldo-4491"
-  },
-  {
-    "teamId": "daniel",
-    "teamName": "Daniel",
-    "key": "daniel-3319"
-  },
-  {
-    "teamId": "samuel",
-    "teamName": "Samuel",
-    "key": "samuel-7728"
-  },
-  {
-    "teamId": "sant-boi-chargers",
-    "teamName": "Sant Boi Chargers",
-    "key": "chargers-5501"
   },
   {
     "teamId": "bcn-giants",
@@ -65,9 +15,34 @@
     "key": "giants-2283"
   },
   {
-    "teamId": "juanito",
-    "teamName": "Juanito",
-    "key": "juanito-6614"
+    "teamId": "toledo-patriots",
+    "teamName": "Toledo Patriots",
+    "key": "patriots-4912"
+  },
+  {
+    "teamId": "ohio-dolphins",
+    "teamName": "Ohio Dolphins",
+    "key": "dolphins-6671"
+  },
+  {
+    "teamId": "daniel",
+    "teamName": "Daniel",
+    "key": "daniel-3319"
+  },
+  {
+    "teamId": "la-osera",
+    "teamName": "La Osera",
+    "key": "osera-3829"
+  },
+  {
+    "teamId": "camioneros",
+    "teamName": "Camioneros",
+    "key": "camioneros-8823"
+  },
+  {
+    "teamId": "samuel",
+    "teamName": "Samuel",
+    "key": "samuel-7728"
   },
   {
     "teamId": "navarra-colts",
@@ -75,8 +50,33 @@
     "key": "colts-7739"
   },
   {
-    "teamId": "xisko",
-    "teamName": "Xisko",
-    "key": "xisko-9912"
+    "teamId": "team-13",
+    "teamName": "Team 13",
+    "key": "pendiente-invitacion"
+  },
+  {
+    "teamId": "team-14",
+    "teamName": "Team 14",
+    "key": "pendiente-invitacion"
+  },
+  {
+    "teamId": "team-15",
+    "teamName": "Team 15",
+    "key": "pendiente-invitacion"
+  },
+  {
+    "teamId": "team-16",
+    "teamName": "Team 16",
+    "key": "pendiente-invitacion"
+  },
+  {
+    "teamId": "team-17",
+    "teamName": "Team 17",
+    "key": "pendiente-invitacion"
+  },
+  {
+    "teamId": "team-18",
+    "teamName": "Team 18",
+    "key": "pendiente-invitacion"
   }
 ]

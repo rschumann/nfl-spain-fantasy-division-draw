@@ -3,21 +3,21 @@ import defaultTeams from '../../config/teams.json' with { type: 'json' };
 
 export const ESPN_ID_TO_TEAM_ID: Record<number, string> = {
   1: 'madrid-steelers',
-  2: 'nico',
   3: 'barakaldo',
   4: 'bcn-giants',
   5: 'toledo-patriots',
   6: 'ohio-dolphins',
   7: 'daniel',
-  8: 'juanito',
   9: 'la-osera',
   10: 'camioneros',
   11: 'samuel',
   12: 'navarra-colts',
-  13: 'london-viking',
-  14: 'wolverines',
-  15: 'sant-boi-chargers',
-  16: 'xisko'
+  13: 'team-13',
+  14: 'team-14',
+  15: 'team-15',
+  16: 'team-16',
+  17: 'team-17',
+  18: 'team-18'
 };
 
 interface RawEspnTeam {
@@ -66,19 +66,16 @@ export class EspnFantasyClient {
   }
 
   private mapEspnTeams(rawTeams: RawEspnTeam[]): readonly Team[] {
+    const sorted = [...rawTeams].sort((a, b) => a.id - b.id);
     const results: Team[] = [];
-    const espnMap = new Map(rawTeams.map((t) => [t.id, t]));
-
-    for (let i = 1; i <= 16; i++) {
-      const canonicalId = ESPN_ID_TO_TEAM_ID[i];
-      if (!canonicalId) continue;
-      const fallbackName = this.defaultMap.get(canonicalId) || canonicalId;
-      const raw = espnMap.get(i);
-      const name = raw ? resolveName(raw, fallbackName) : fallbackName;
-      const logoUrl = raw?.logo || undefined;
-      const isPending = !raw?.primaryOwner;
+    for (const raw of sorted) {
+      const canonicalId = ESPN_ID_TO_TEAM_ID[raw.id] || `team-${raw.id}`;
+      const fallbackName = this.defaultMap.get(canonicalId) || `Team ${raw.id}`;
+      const name = resolveName(raw, fallbackName);
+      const logoUrl = raw.logo || undefined;
+      const isPending = !raw.primaryOwner;
       results.push({ id: canonicalId, name, logoUrl, isPending });
     }
-    return results;
+    return results.length === 16 ? results : (defaultTeams as readonly Team[]);
   }
 }

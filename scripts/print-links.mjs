@@ -44,9 +44,7 @@ function main() {
     '================================================================================\n'
   );
 
-  console.info(
-    '| #  | Equipo                 | Token          | Enlace Personalizado'
-  );
+  console.info('| #  | Equipo                 | Token          | Enlace Personalizado');
   console.info(
     '|----|------------------------|----------------|----------------------------------------------------'
   );

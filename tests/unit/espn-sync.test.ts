@@ -4,23 +4,29 @@ import { TeamRegistry } from '../../src/server/team-registry.js';
 
 describe('ESPN Fantasy Live Sync & Team Registry', () => {
   it('maps ESPN API response with custom team names and logos', async () => {
-    const mockResponse = {
-      teams: [
-        {
-          id: 1,
-          name: 'Madrid Steelers Custom',
-          logo: 'https://g.espncdn.com/logo1.svg',
-          primaryOwner: 'owner-1'
-        },
-        { id: 2, location: 'Nico', nickname: 'Dynasty' },
-        { id: 9, name: 'La Osera Champions', primaryOwner: 'owner-9' }
-      ]
-    };
+    const mockTeams = [
+      { id: 1, name: 'Madrid Steelers Custom', logo: 'https://g.espncdn.com/logo1.svg', primaryOwner: 'owner-1' },
+      { id: 3, location: 'Barakaldo', nickname: 'Dynasty' },
+      { id: 4, name: 'BCN Giants', primaryOwner: 'owner-4' },
+      { id: 5, name: 'Toledo Patriots', primaryOwner: 'owner-5' },
+      { id: 6, name: 'Ohio Dolphins', primaryOwner: 'owner-6' },
+      { id: 7, name: 'Daniel', primaryOwner: 'owner-7' },
+      { id: 9, name: 'La Osera Champions', primaryOwner: 'owner-9' },
+      { id: 10, name: 'Camioneros', primaryOwner: 'owner-10' },
+      { id: 11, name: 'Samuel', primaryOwner: 'owner-11' },
+      { id: 12, name: 'Navarra Colts', primaryOwner: 'owner-12' },
+      { id: 13, name: 'Team 13' },
+      { id: 14, name: 'Team 14' },
+      { id: 15, name: 'Team 15' },
+      { id: 16, name: 'Team 16' },
+      { id: 17, name: 'Team 17' },
+      { id: 18, name: 'Team 18' }
+    ];
 
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     fetchSpy.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockResponse
+      json: async () => ({ teams: mockTeams })
     } as unknown as Response);
 
     const client = new EspnFantasyClient();
@@ -32,9 +38,9 @@ describe('ESPN Fantasy Live Sync & Team Registry', () => {
     expect(team1?.logoUrl).toBe('https://g.espncdn.com/logo1.svg');
     expect(team1?.isPending).toBe(false);
 
-    const team2 = teams.find((t) => t.id === 'nico');
-    expect(team2?.name).toBe('Nico Dynasty');
-    expect(team2?.isPending).toBe(true);
+    const team3 = teams.find((t) => t.id === 'barakaldo');
+    expect(team3?.name).toBe('Barakaldo Dynasty');
+    expect(team3?.isPending).toBe(true);
 
     fetchSpy.mockRestore();
   });
