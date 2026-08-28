@@ -80,7 +80,11 @@ describe('Web Renderers and Polling Sync (Task 06 / Task 09)', () => {
     });
     const badge = container.querySelector('[data-ref="my-team-badge"]');
     expect(badge?.textContent).toContain('Madrid Steelers');
-    expect(badge?.querySelector('[data-ref="admin-open-btn"]')).not.toBeNull();
+    const adminBtn = badge?.querySelector<HTMLButtonElement>(
+      '[data-ref="admin-open-btn"]'
+    );
+    expect(adminBtn).not.toBeNull();
+    adminBtn?.click();
 
     renderHeader(container, vm1, {
       teamId: 'toledo-patriots',
