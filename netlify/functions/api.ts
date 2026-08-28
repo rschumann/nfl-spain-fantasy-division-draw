@@ -11,7 +11,7 @@ const defaultEnv: Record<string, string> = {
   LEAGUE_NAME: 'NFL Spain',
   SEASON_LABEL: '26-27',
   DRAW_TIMEZONE: 'Europe/Madrid',
-  DRAW_START_AT: '2026-08-28T19:00:00.000Z',
+  DRAW_START_AT: '2026-08-28T21:00:00.000Z',
   DRAW_REVEAL_INTERVAL_SECONDS: '120',
   DRAW_RESET_ON_START: 'false',
   DIVISIONS_COUNT: '4',

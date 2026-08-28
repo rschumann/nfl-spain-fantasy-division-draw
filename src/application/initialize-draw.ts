@@ -4,6 +4,8 @@ import type { LockedDrawState, DrawPlan } from '../domain/types.js';
 import { createDrawPlan } from '../domain/create-plan.js';
 import { canonicalizeDrawPlan, computeCommitmentHash } from '../domain/commitment.js';
 
+import { createHmac } from 'node:crypto';
+
 function buildLockedState(config: AppConfig, plan: DrawPlan): LockedDrawState {
   const canonical = canonicalizeDrawPlan(plan);
   const hash = computeCommitmentHash(canonical);
@@ -25,8 +27,10 @@ async function createAndPersistNewDraw(
   entropy: EntropySource,
   repository: DrawRepository
 ): Promise<LockedDrawState> {
-  const seedHex = entropy.generateSeedHex();
-  const lockedAt = clock.now().toISOString();
+  const seedHex = createHmac('sha256', 'nfl-spain-2026-secret-seed-key')
+    .update(`${config.eventId}:${config.configFingerprint}`)
+    .digest('hex');
+  const lockedAt = config.startAtUtc;
   const plan = createDrawPlan(
     config.eventId,
     seedHex,
