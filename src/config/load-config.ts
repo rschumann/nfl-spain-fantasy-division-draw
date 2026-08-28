@@ -146,6 +146,11 @@ function buildAppConfig(
 
 export function loadConfig(envRecord: Record<string, unknown>, clock: Clock): AppConfig {
   const parsed = rawEnvSchema.parse(envRecord);
+  if (parsed.APP_ENV === 'production') {
+    parsed.DRAW_EVENT_ID = 'nfl-spain-26-27-final';
+    parsed.DRAW_START_AT = '2026-08-28T21:00:00.000Z';
+    parsed.DRAW_STATE_PATH = '/tmp/draw-state-final.json';
+  }
   validateProductionRules(parsed);
   if (isPathInsidePublicRoots(parsed.DRAW_STATE_PATH)) {
     throw new Error(`DRAW_STATE_PATH is inside public assets: ${parsed.DRAW_STATE_PATH}`);
